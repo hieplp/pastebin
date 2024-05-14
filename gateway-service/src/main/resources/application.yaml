@@ -1,0 +1,52 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: gateway-service
+  main:
+    web-application-type: reactive
+  threads:
+    virtual:
+      enabled: true
+
+---
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: api_template
+          uri: lb://template-service
+          predicates:
+            - Path=/api/templates/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+        - id: api_notification
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+
+---
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:admin}
+      password: ${REDIS_PASSWORD:secret}
+
+rate:
+  limit:
+    max: 60
+    bandwidth:
+      capacity: 5
+      refill-time: 60
+
+---
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    prefer-ip-address: true

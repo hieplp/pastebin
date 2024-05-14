@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  redis:
+    container_name: redis
+    image: redis:latest
+    hostname: ${REDIS_HOST}
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redis:/data/redis
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    environment:
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-admin}
+      REDIS_DATABASE: ${REDIS_DATABASE:-16}
+    networks:
+      - pastebin-network
+
+networks:
+  pastebin-network:
+    driver: bridge
+
+volumes:
+  redis:
