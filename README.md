@@ -1,2 +1,2 @@
- pastebin
+pastebin
 Simple Pastebin

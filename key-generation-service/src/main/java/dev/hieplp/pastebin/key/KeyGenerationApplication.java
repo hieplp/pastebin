@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class KeyGenerationServiceApplication {
+public class KeyGenerationApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(KeyGenerationServiceApplication.class, args);
+        SpringApplication.run(KeyGenerationApplication.class, args);
     }
 
 }
