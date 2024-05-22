@@ -24,11 +24,21 @@ public class RateLimitFilter implements WebFilter {
 
     private ProxyManager<String> proxyManager;
 
+    /**
+     * Set Bucket Configuration
+     *
+     * @param bucketConfiguration Bucket Configuration
+     */
     @Autowired
     public void setBucketConfiguration(Supplier<BucketConfiguration> bucketConfiguration) {
         this.bucketConfiguration = bucketConfiguration;
     }
 
+    /**
+     * Set Proxy Manager
+     *
+     * @param proxyManager Proxy Manager
+     */
     @Autowired
     public void setProxyManager(ProxyManager<String> proxyManager) {
         this.proxyManager = proxyManager;

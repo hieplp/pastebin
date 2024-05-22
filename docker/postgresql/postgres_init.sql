@@ -1,2 +1,5 @@
 CREATE
-DATABASE key;
+DATABASE keys;
+
+CREATE
+DATABASE users;
