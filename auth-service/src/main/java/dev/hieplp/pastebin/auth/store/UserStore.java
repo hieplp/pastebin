@@ -8,4 +8,6 @@ public interface UserStore {
     boolean existsByUsername(String username);
 
     UserEntity findByUsername(String username);
+
+    UserEntity findByUserId(String userId);
 }

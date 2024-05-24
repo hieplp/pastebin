@@ -1,21 +1,27 @@
 package dev.hieplp.pastebin.auth.service.impl;
 
+import dev.hieplp.pastebin.auth.config.UserInfoDetails;
 import dev.hieplp.pastebin.auth.entity.UserEntity;
 import dev.hieplp.pastebin.auth.payload.response.TokenResponse;
 import dev.hieplp.pastebin.auth.service.TokenService;
+import dev.hieplp.pastebin.common.enums.token.TokenClaimKey;
 import dev.hieplp.pastebin.common.enums.token.TokenType;
-import io.jsonwebtoken.Jwts;
+import dev.hieplp.pastebin.common.exception.UnauthorizedException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -37,16 +43,69 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenResponse generate(TokenType tokenType,
-                                  UserEntity user,
-                                  Map<String, Object> extraClaims) {
+    public TokenResponse generate(TokenType tokenType, UserEntity user, Map<String, Object> extraClaims) {
         if (TokenType.REFRESH.equals(tokenType)) {
             return buildToken(user, extraClaims, refreshTokenExpiration);
         }
         return buildToken(user, extraClaims, accessTokenExpiration);
     }
 
-    private Key getSignInKey() {
+    @Override
+    public UserInfoDetails validate(TokenType tokenType, String token) {
+        log.info("Validate token: {} with type: {}", token, tokenType);
+
+        var jws = verify(token);
+        var claims = jws.getPayload();
+
+        var type = extractType(claims);
+        if (ObjectUtils.isEmpty(type) || ObjectUtils.notEqual(tokenType.name(), type)) {
+            log.warn("Token type is invalid: {}", type);
+            throw new UnauthorizedException("Token type is invalid");
+        }
+
+        var userId = extractUserId(claims);
+
+        var user = new UserEntity();
+        user.setUserId(userId);
+
+        return new UserInfoDetails(user);
+    }
+
+    @Override
+    public Jws<Claims> verify(String token) {
+        try {
+            final var parser = Jwts.parser()
+                    .verifyWith(getSignInKey())
+                    .build();
+            return parser.parseSignedClaims(token);
+        } catch (ExpiredJwtException ex) {
+            log.warn("JWT expired: {}", ex.getMessage());
+            throw new UnauthorizedException("JWT expired");
+        } catch (IllegalArgumentException ex) {
+            log.warn("Token is null, empty or only whitespace: {}", ex.getMessage());
+            throw new UnauthorizedException("Token is null, empty or only whitespace");
+        } catch (MalformedJwtException ex) {
+            log.warn("JWT is invalid", ex);
+            throw new UnauthorizedException("JWT is invalid");
+        } catch (UnsupportedJwtException ex) {
+            log.warn("JWT is not supported", ex);
+            throw new UnauthorizedException("JWT is not supported");
+        }
+    }
+
+    private String extractType(Claims claims) {
+        return claims.get(TokenClaimKey.TYPE.getKey(), String.class);
+    }
+
+    private String extractUserId(Claims claims) {
+        return claims.get(TokenClaimKey.USER_ID.getKey(), String.class);
+    }
+
+    private String extractSubject(Claims claims) {
+        return claims.getSubject();
+    }
+
+    private SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
@@ -103,15 +162,18 @@ public class TokenServiceImpl implements TokenService {
             if (extraClaims == null) {
                 extraClaims = new HashMap<>();
             }
-            extraClaims.put("tokenType", tokenType.name());
+
+            extraClaims.put(TokenClaimKey.USER_ID.getKey(), user.getUserId());
+            extraClaims.put(TokenClaimKey.TYPE.getKey(), tokenType.name());
 
             var expiredAt = new Date(System.currentTimeMillis() + expiredIn);
 
             var token = Jwts.builder()
-                    .claims(extraClaims)
-                    .subject(user.getUsername())
+                    .id(UUID.randomUUID().toString())
+                    .subject(user.getUserId())
                     .issuedAt(new Date(System.currentTimeMillis()))
                     .expiration(expiredAt)
+                    .claims(extraClaims)
                     .signWith(signedKey)
                     .compact();
 

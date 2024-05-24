@@ -32,8 +32,20 @@ public class UserStoreImpl implements UserStore {
         log.info("Find user by username: {}", username);
         return userRepo.findByUsername(username)
                 .orElseThrow(() -> {
-                    log.error("User not found with username: {}", username);
-                    return new NotFoundException("User not found");
+                    final var msg = "User not found with username: " + username;
+                    log.error(msg);
+                    return new NotFoundException(msg);
+                });
+    }
+
+    @Override
+    public UserEntity findByUserId(String userId) {
+        log.info("Find user by userId: {}", userId);
+        return userRepo.findById(userId)
+                .orElseThrow(() -> {
+                    final var msg = "User not found with userId: " + userId;
+                    log.error(msg);
+                    return new NotFoundException(msg);
                 });
     }
 }
