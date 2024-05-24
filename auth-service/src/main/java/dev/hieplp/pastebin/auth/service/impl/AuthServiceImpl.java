@@ -5,6 +5,7 @@ import dev.hieplp.pastebin.auth.payload.request.LoginRequest;
 import dev.hieplp.pastebin.auth.payload.request.RegisterRequest;
 import dev.hieplp.pastebin.auth.payload.response.LoginResponse;
 import dev.hieplp.pastebin.auth.payload.response.RegisterResponse;
+import dev.hieplp.pastebin.auth.payload.response.TokenResponse;
 import dev.hieplp.pastebin.auth.payload.response.UserResponse;
 import dev.hieplp.pastebin.auth.service.AuthService;
 import dev.hieplp.pastebin.auth.service.PasswordService;
@@ -82,5 +83,12 @@ public class AuthServiceImpl implements AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    @Override
+    public TokenResponse refreshToken(String userId) {
+        log.info("Refresh token");
+        var user = userService.findByUserId(userId);
+        return tokenService.generate(TokenType.ACCESS, user);
     }
 }

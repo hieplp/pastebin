@@ -37,8 +37,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
+        // Determine token type
+        var tokenType = request.getServletPath().contains("/auth/refresh")
+                ? TokenType.REFRESH
+                : TokenType.ACCESS;
+
         // Validate token
-        var userDetails = tokenService.validate(TokenType.ACCESS, jwt);
+        var userDetails = tokenService.validate(tokenType, jwt);
 
         // Set authentication context
         var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

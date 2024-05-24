@@ -4,6 +4,7 @@ import dev.hieplp.pastebin.auth.payload.request.LoginRequest;
 import dev.hieplp.pastebin.auth.payload.request.RegisterRequest;
 import dev.hieplp.pastebin.auth.payload.response.LoginResponse;
 import dev.hieplp.pastebin.auth.payload.response.RegisterResponse;
+import dev.hieplp.pastebin.auth.payload.response.TokenResponse;
 
 public interface AuthService {
     /**
@@ -21,4 +22,13 @@ public interface AuthService {
      * @return Login response
      */
     LoginResponse login(LoginRequest request);
+
+
+    /**
+     * Refresh token
+     *
+     * @param userId User id
+     * @return Token response
+     */
+    TokenResponse refreshToken(String userId);
 }

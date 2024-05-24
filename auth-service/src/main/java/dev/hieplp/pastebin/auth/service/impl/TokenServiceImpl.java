@@ -44,31 +44,31 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenResponse generate(TokenType tokenType, UserEntity user, Map<String, Object> extraClaims) {
-        if (TokenType.REFRESH.equals(tokenType)) {
-            return buildToken(user, extraClaims, refreshTokenExpiration);
-        }
-        return buildToken(user, extraClaims, accessTokenExpiration);
+        return TokenType.REFRESH.equals(tokenType)
+                ? buildToken(user, tokenType, extraClaims, refreshTokenExpiration)
+                : buildToken(user, tokenType, extraClaims, accessTokenExpiration);
     }
 
     @Override
     public UserInfoDetails validate(TokenType tokenType, String token) {
         log.info("Validate token: {} with type: {}", token, tokenType);
 
-        var jws = verify(token);
-        var claims = jws.getPayload();
+        final var jws = verify(token);
 
-        var type = extractType(claims);
+        final var claims = jws.getPayload();
+
+        final var type = extractType(claims);
         if (ObjectUtils.isEmpty(type) || ObjectUtils.notEqual(tokenType.name(), type)) {
             log.warn("Token type is invalid: {}", type);
             throw new UnauthorizedException("Token type is invalid");
         }
 
-        var userId = extractUserId(claims);
+        final var userId = extractUserId(claims);
 
-        var user = new UserEntity();
-        user.setUserId(userId);
-
-        return new UserInfoDetails(user);
+        return new UserInfoDetails(UserEntity.builder()
+                .userId(userId)
+                .build()
+        );
     }
 
     @Override
@@ -111,13 +111,14 @@ public class TokenServiceImpl implements TokenService {
     }
 
     private TokenResponse buildToken(UserEntity user,
+                                     TokenType tokenType,
                                      Map<String, Object> extraClaims,
                                      long expiredIn) {
         return new TokenBuilder()
                 .user(user)
                 .extraClaims(extraClaims)
                 .expiredIn(expiredIn)
-                .tokenType(TokenType.ACCESS)
+                .tokenType(tokenType)
                 .signWith(getSignInKey())
                 .build();
     }
