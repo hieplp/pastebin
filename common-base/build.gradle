@@ -29,12 +29,30 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    api(
+            'org.springframework.boot:spring-boot',
+            'org.springframework.boot:spring-boot-starter-web',
+            'org.springframework.boot:spring-boot-starter-security',
+            'org.springframework.boot:spring-boot-starter-oauth2-resource-server',
+            'org.springframework.boot:spring-boot-starter-data-jpa'
+    )
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    api(
+            'io.jsonwebtoken:jjwt-api:0.12.5'
+    )
+
+    compileOnlyApi(
+            'io.jsonwebtoken:jjwt-impl:0.12.5',
+            'io.jsonwebtoken:jjwt-jackson:0.12.5'
+    )
+
+
+    api 'org.apache.commons:commons-lang3:3.14.0'
 }
 
 tasks.withType(JavaCompile).configureEach {

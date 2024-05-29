@@ -1,8 +1,8 @@
 package dev.hieplp.pastebin.auth.service.impl;
 
-import dev.hieplp.pastebin.auth.config.UserInfoDetails;
 import dev.hieplp.pastebin.auth.service.PasswordService;
 import dev.hieplp.pastebin.auth.service.UserService;
+import dev.hieplp.pastebin.common.auth.UserInfoDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,6 +31,10 @@ public class UserInfoService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userService.findByUsername(username);
         var password = passwordService.findById(user.getUserId());
-        return new UserInfoDetails(user, password);
+        return UserInfoDetails.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .password(new String(password.getPassword()))
+                .build();
     }
 }

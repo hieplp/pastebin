@@ -1,12 +1,12 @@
 package dev.hieplp.pastebin.auth.controller;
 
-import dev.hieplp.pastebin.auth.config.UserInfoDetails;
 import dev.hieplp.pastebin.auth.payload.request.LoginRequest;
 import dev.hieplp.pastebin.auth.payload.request.RegisterRequest;
 import dev.hieplp.pastebin.auth.payload.response.LoginResponse;
 import dev.hieplp.pastebin.auth.payload.response.RegisterResponse;
 import dev.hieplp.pastebin.auth.payload.response.TokenResponse;
 import dev.hieplp.pastebin.auth.service.AuthService;
+import dev.hieplp.pastebin.common.auth.UserInfoDetails;
 import dev.hieplp.pastebin.common.payload.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@ public class AuthController {
     @PostMapping("/refresh")
     public CommonResponse<TokenResponse> refreshToken(@AuthenticationPrincipal UserInfoDetails userDetails) {
         log.debug("Refresh token");
-        final var response = authService.refreshToken(userDetails.userId());
+        final var response = authService.refreshToken(userDetails.getUserId());
         return CommonResponse.success(response);
     }
 }

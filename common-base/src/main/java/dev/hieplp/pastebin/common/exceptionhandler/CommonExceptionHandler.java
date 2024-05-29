@@ -4,19 +4,16 @@ package dev.hieplp.pastebin.common.exceptionhandler;
 import dev.hieplp.pastebin.common.exception.BadRequestException;
 import dev.hieplp.pastebin.common.exception.DuplicateException;
 import dev.hieplp.pastebin.common.exception.NotFoundException;
+import dev.hieplp.pastebin.common.exception.UnauthorizedException;
 import dev.hieplp.pastebin.common.payload.response.CommonResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.nio.file.AccessDeniedException;
 
 @Slf4j
-@Order
-@ControllerAdvice
-public class CommonExceptionHandler {
+public abstract class CommonExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<CommonResponse<?>> handleBadRequestException(BadRequestException e) {
         log.error("Bad request exception: {}", e.getMessage());
@@ -39,6 +36,12 @@ public class CommonExceptionHandler {
     public ResponseEntity<CommonResponse<?>> handleDuplicatedException(DuplicateException e) {
         log.error("Duplicated exception: {}", e.getMessage());
         return ResponseEntity.ok(CommonResponse.duplicated());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<CommonResponse<?>> handleUnauthorizedException(UnauthorizedException e) {
+        log.error("Unauthorized exception: {}", e.getMessage());
+        return ResponseEntity.ok(CommonResponse.unauthorized());
     }
 
     @ExceptionHandler(Exception.class)

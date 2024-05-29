@@ -1,8 +1,8 @@
 package dev.hieplp.pastebin.auth.controller;
 
-import dev.hieplp.pastebin.auth.config.UserInfoDetails;
 import dev.hieplp.pastebin.auth.payload.response.UserResponse;
 import dev.hieplp.pastebin.auth.service.UserService;
+import dev.hieplp.pastebin.common.auth.UserInfoDetails;
 import dev.hieplp.pastebin.common.payload.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class UserController {
     @GetMapping("/me")
     public CommonResponse<UserResponse> getProfile(@AuthenticationPrincipal UserInfoDetails userDetails) {
         log.info("Get profile");
-        var profile = userService.getProfile(userDetails.userId());
+        var profile = userService.getProfile(userDetails.getUserId());
         return CommonResponse.success(profile);
     }
 }

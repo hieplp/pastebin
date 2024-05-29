@@ -1,8 +1,7 @@
-package dev.hieplp.pastebin.auth.config;
+package dev.hieplp.pastebin.common.auth;
 
-import dev.hieplp.pastebin.auth.entity.PasswordEntity;
-import dev.hieplp.pastebin.auth.entity.UserEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +11,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 @Getter
+@Builder
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 public class UserInfoDetails implements UserDetails {
@@ -20,23 +20,7 @@ public class UserInfoDetails implements UserDetails {
 
     private final String password;
 
-    private final UserEntity user;
-
-    public UserInfoDetails(UserEntity user, PasswordEntity password) {
-        this.user = user;
-        this.username = user.getUsername();
-        this.password = new String(password.getPassword());
-    }
-
-    public UserInfoDetails(UserEntity user) {
-        this.user = user;
-        this.username = user.getUsername();
-        this.password = null;
-    }
-
-    public String userId() {
-        return user.getUserId();
-    }
+    private final String userId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

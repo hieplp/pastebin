@@ -1,22 +1,17 @@
 package dev.hieplp.pastebin.auth.service.impl;
 
-import dev.hieplp.pastebin.auth.config.UserInfoDetails;
 import dev.hieplp.pastebin.auth.entity.UserEntity;
 import dev.hieplp.pastebin.auth.payload.response.TokenResponse;
 import dev.hieplp.pastebin.auth.service.TokenService;
+import dev.hieplp.pastebin.common.auth.TokenUtil;
 import dev.hieplp.pastebin.common.enums.token.TokenClaimKey;
 import dev.hieplp.pastebin.common.enums.token.TokenType;
-import dev.hieplp.pastebin.common.exception.UnauthorizedException;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -49,67 +44,6 @@ public class TokenServiceImpl implements TokenService {
                 : buildToken(user, tokenType, extraClaims, accessTokenExpiration);
     }
 
-    @Override
-    public UserInfoDetails validate(TokenType tokenType, String token) {
-        log.info("Validate token: {} with type: {}", token, tokenType);
-
-        final var jws = verify(token);
-
-        final var claims = jws.getPayload();
-
-        final var type = extractType(claims);
-        if (ObjectUtils.isEmpty(type) || ObjectUtils.notEqual(tokenType.name(), type)) {
-            log.warn("Token type is invalid: {}", type);
-            throw new UnauthorizedException("Token type is invalid");
-        }
-
-        final var userId = extractUserId(claims);
-
-        return new UserInfoDetails(UserEntity.builder()
-                .userId(userId)
-                .build()
-        );
-    }
-
-    @Override
-    public Jws<Claims> verify(String token) {
-        try {
-            final var parser = Jwts.parser()
-                    .verifyWith(getSignInKey())
-                    .build();
-            return parser.parseSignedClaims(token);
-        } catch (ExpiredJwtException ex) {
-            log.warn("JWT expired: {}", ex.getMessage());
-            throw new UnauthorizedException("JWT expired");
-        } catch (IllegalArgumentException ex) {
-            log.warn("Token is null, empty or only whitespace: {}", ex.getMessage());
-            throw new UnauthorizedException("Token is null, empty or only whitespace");
-        } catch (MalformedJwtException ex) {
-            log.warn("JWT is invalid", ex);
-            throw new UnauthorizedException("JWT is invalid");
-        } catch (UnsupportedJwtException ex) {
-            log.warn("JWT is not supported", ex);
-            throw new UnauthorizedException("JWT is not supported");
-        }
-    }
-
-    private String extractType(Claims claims) {
-        return claims.get(TokenClaimKey.TYPE.getKey(), String.class);
-    }
-
-    private String extractUserId(Claims claims) {
-        return claims.get(TokenClaimKey.USER_ID.getKey(), String.class);
-    }
-
-    private String extractSubject(Claims claims) {
-        return claims.getSubject();
-    }
-
-    private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
     private TokenResponse buildToken(UserEntity user,
                                      TokenType tokenType,
                                      Map<String, Object> extraClaims,
@@ -119,7 +53,7 @@ public class TokenServiceImpl implements TokenService {
                 .extraClaims(extraClaims)
                 .expiredIn(expiredIn)
                 .tokenType(tokenType)
-                .signWith(getSignInKey())
+                .signWith(TokenUtil.getSignInKey(secretKey))
                 .build();
     }
 

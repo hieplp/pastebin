@@ -1,6 +1,7 @@
 package dev.hieplp.pastebin.auth.config;
 
-import dev.hieplp.pastebin.auth.filter.JwtAuthFilter;
+import dev.hieplp.pastebin.common.auth.AbstractJwtAuthEntryPoint;
+import dev.hieplp.pastebin.common.auth.AbstractJwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +22,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthFilter jwtAuthFilter;
+    private final AbstractJwtAuthFilter jwtAuthFilter;
 
     private final AuthenticationProvider authenticationProvider;
+
+    private final AbstractJwtAuthEntryPoint jwtAuthEntryPoint;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -52,6 +55,10 @@ public class SecurityConfig {
 
                 .authenticationProvider(authenticationProvider)
 
+                // Entry point
+                .exceptionHandling(exc -> exc.authenticationEntryPoint(jwtAuthEntryPoint))
+
+                // Filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .build();
