@@ -1,0 +1,352 @@
+{
+	"info": {
+		"_postman_id": "3b17e5cd-a7af-4390-bef4-40b679506e22",
+		"name": "pastebin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32078542"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"string\",\r\n  \"password\": \"string\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/auth/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"string\",\r\n  \"name\": \"string\",\r\n  \"password\": \"string\"\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/api/auth/register",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{refresh-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/api/auth/refresh",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "get own profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/api/users/me",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "paste",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"alias\": \"string3\",\r\n    \"description\": \"string\",\r\n    \"content\": \"string\",\r\n    \"status\": \"PUBLIC\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/pastes",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"pastes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"alias\": \"string7\",\r\n    \"description\": \"string\",\r\n    \"content\": \"string\",\r\n    \"status\": \"PUBLIC\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/pastes/:pasteId",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"pastes",
+								":pasteId"
+							],
+							"variable": [
+								{
+									"key": "pasteId",
+									"value": "856cf9ec-c097-4722-8562-0e2964b11610"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/pastes/:pasteId",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"pastes",
+								":pasteId"
+							],
+							"variable": [
+								{
+									"key": "pasteId",
+									"value": "a1d77953-8e83-4923-bd7c-da9c09e0b744"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/pastes/:pasteId",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"pastes",
+								":pasteId"
+							],
+							"variable": [
+								{
+									"key": "pasteId",
+									"value": "7aa16aee-1aa9-4fdc-9e51-75189f92dcda"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "access-token",
+			"value": "eyJhbGciOiJIUzM4NCJ9.eyJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJzdWIiOiJzdHJpbmciLCJpYXQiOjE3MTY1MzI4NzcsImV4cCI6MTcxNjYxOTI3N30.eX7mUj0I9cW87J2o5IbffcqgUGHjPCRwnnDi6DUTrJnjO4FpIbj05hx-czspclAa",
+			"type": "string"
+		},
+		{
+			"key": "refresh-token",
+			"value": "eyJhbGciOiJIUzM4NCJ9.eyJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJzdWIiOiJzdHJpbmciLCJpYXQiOjE3MTY1MzI4NzcsImV4cCI6MTcxNzEzNzY3N30.rOHDuPfWck4HK5f4ykx-pMAcljZ2v7XH8IvtQw_T2tL_dDuy92nDX2v6ca5BtkCo",
+			"type": "string"
+		}
+	]
+}
