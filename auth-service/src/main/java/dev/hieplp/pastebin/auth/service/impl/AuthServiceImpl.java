@@ -38,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
 
         // Check if username is already taken
         if (userService.existsByUsername(request.username())) {
-            log.error("Username: {} is already taken", request.username());
+            log.warn("Username: {} is already taken", request.username());
             throw new DuplicateException("Username is already taken");
         }
 

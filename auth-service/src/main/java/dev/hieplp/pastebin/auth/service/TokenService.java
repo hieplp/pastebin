@@ -25,21 +25,4 @@ public interface TokenService {
      * @return Token response
      */
     TokenResponse generate(TokenType tokenType, UserEntity user, Map<String, Object> extraClaims);
-
-//    /**
-//     * Validate token. The token will be verified and the claims will be extracted
-//     *
-//     * @param tokenType Token type
-//     * @param token     Token
-//     * @return UserInfoDetails
-//     */
-//    UserInfoDetails validate(TokenType tokenType, String token);
-//
-//    /**
-//     * Verify token
-//     *
-//     * @param token Token
-//     * @return Jws
-//     */
-//    Jws<Claims> verify(String token);
 }

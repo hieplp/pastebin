@@ -14,16 +14,22 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: api_template
-          uri: lb://template-service
+        - id: api_auth
+          uri: lb://auth-service
           predicates:
-            - Path=/api/templates/**
+            - Path=/api/auth/**
           filters:
             - RewritePath=/api/(?<segment>.*), /$\{segment}
-        - id: api_notification
-          uri: lb://notification-service
+        - id: api_user
+          uri: lb://auth-service
           predicates:
-            - Path=/api/notifications/**
+            - Path=/api/users/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+        - id: api_paste
+          uri: lb://paste-service
+          predicates:
+            - Path=/api/pastes/**
           filters:
             - RewritePath=/api/(?<segment>.*), /$\{segment}
 

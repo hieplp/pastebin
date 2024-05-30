@@ -1,6 +1,6 @@
 package dev.hieplp.pastebin.auth.entity;
 
-import dev.hieplp.pastebin.common.entity.AbstractAuditEntity;
+import dev.hieplp.pastebin.common.audit.AbstractAuditEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

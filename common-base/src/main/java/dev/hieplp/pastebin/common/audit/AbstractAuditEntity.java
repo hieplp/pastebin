@@ -1,6 +1,5 @@
-package dev.hieplp.pastebin.common.entity;
+package dev.hieplp.pastebin.common.audit;
 
-import dev.hieplp.pastebin.common.listener.CustomAuditingEntityListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -10,13 +9,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.ZonedDateTime;
 
 @Getter
 @Setter
 @MappedSuperclass
-@EntityListeners(CustomAuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public abstract class AbstractAuditEntity {
 
     @CreationTimestamp
@@ -27,7 +27,6 @@ public abstract class AbstractAuditEntity {
     @Column(name = "created_by")
     private String createdBy;
 
-    //@LastModifiedDate
     @UpdateTimestamp
     @Column(name = "last_modified_at")
     private ZonedDateTime lastModifiedAt;

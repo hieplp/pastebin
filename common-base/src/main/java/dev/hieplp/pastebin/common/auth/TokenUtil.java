@@ -37,6 +37,7 @@ public class TokenUtil {
         final var userId = extractUserId(claims);
 
         return UserInfoDetails.builder()
+                .username(userId)
                 .userId(userId)
                 .build();
     }

@@ -3,14 +3,14 @@ server:
 
 spring:
   application:
-    name: auth-service
+    name: paste-service
 
   config:
     import: optional:configserver:http://config-server:8888
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/users}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/pastes}
     username: ${DB_USERNAME:admin}
     password: ${DB_PASSWORD:admin}
 
