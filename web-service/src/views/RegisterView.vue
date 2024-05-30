@@ -5,7 +5,9 @@ import BrandIcon from '@/components/BrandIcon.vue'
 
 const form = reactive({
   username: '',
-  password: ''
+  password: '',
+  name: '',
+  confirmPassword: ''
 })
 
 const handleLogin = () => {
@@ -27,7 +29,7 @@ const handleLogin = () => {
           <h1
             class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white"
           >
-            Sign in to your account
+            Create an account
           </h1>
           <form class="space-y-4 md:space-y-6" action="#">
             <label class="input input-bordered flex items-center gap-2">
@@ -42,6 +44,17 @@ const handleLogin = () => {
             </label>
 
             <label class="input input-bordered flex items-center gap-2">
+              Name
+              <input
+                type="text"
+                name="name"
+                class="grow"
+                placeholder="••••••••"
+                v-model="form.name"
+              />
+            </label>
+
+            <label class="input input-bordered flex items-center gap-2">
               Password
               <input
                 type="password"
@@ -52,22 +65,22 @@ const handleLogin = () => {
               />
             </label>
 
-            <div class="flex items-center justify-between">
-              <div class="form-control">
-                <label class="label cursor-pointer">
-                  <input type="checkbox" checked class="checkbox checkbox-sm" />
-                  <span class="label-text ml-2">Remember me</span>
-                </label>
-              </div>
+            <label class="input input-bordered flex items-center gap-2">
+              Confirm password
+              <input
+                type="password"
+                name="confirmPassword"
+                class="grow"
+                placeholder="••••••••"
+                v-model="form.confirmPassword"
+              />
+            </label>
 
-              <a href="#" class="text-sm font-medium hover:underline"> Forgot password? </a>
-            </div>
-
-            <button class="btn btn-active btn-ghost w-full" @click="handleLogin">Sign in</button>
+            <button class="btn btn-active btn-ghost w-full" @click="handleLogin">Sign up</button>
 
             <p class="text-sm font-light text-center">
-              Don’t have an account yet?
-              <a href="#" class="font-medium hover:underline"> Sign up </a>
+              Have an account?
+              <a href="#" class="font-medium hover:underline"> Sign in </a>
             </p>
           </form>
         </div>
