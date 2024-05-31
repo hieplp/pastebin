@@ -8,11 +8,11 @@ const { contents } = defineProps<PasteContentsProps>()
 </script>
 
 <template>
-  <ul class="border rounded p-2 border-gray-700 overflow-y-hidden scroller-x">
+  <ul class="border rounded p-2 border-gray-700 scroller-x">
     <li v-for="(content, index) in contents" :key="content" class="flex items-center max-w-full">
-      <span class="text-end text-sm mx-5">
+      <p class="text-end text-sm mx-5 min-w-5 max-w-5">
         {{ index + 1 }}
-      </span>
+      </p>
 
       <code class="text-white whitespace-nowrap">
         {{ content }}

@@ -1,21 +1,20 @@
 <script lang="ts" setup>
-export interface PasteHeaderProps {
-  username: string
-  noteName: string
-}
+import PasteHeaderName from '@/components/paste/PasteHeaderName.vue'
 
-const { username, noteName } = defineProps<PasteHeaderProps>()
+export interface PasteHeaderProps {
+  noteName: string
+  username: string
+}
 </script>
 
 <template>
-  <div class="space-x-1 flex text-white">
-    <a class="font-bold hover:underline" href="">
-      {{ username }}
-    </a>
-    <p class="text-gray-500">/</p>
-    <a class="font-bold hover:underline" href="">
-      {{ noteName }}
-    </a>
+  <div class="flex justify-between items-center">
+    <PasteHeaderName note-name="note_name" username="hieplp" />
+
+    <div class="flex space-x-1">
+      <button class="btn btn-sm btn-ghost">Edit</button>
+      <button class="btn btn-sm btn-ghost">Delete</button>
+    </div>
   </div>
 </template>
 

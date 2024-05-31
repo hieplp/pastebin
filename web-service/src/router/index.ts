@@ -17,7 +17,23 @@ const router = createRouter({
       path: '/own-pastes',
       name: 'pastes',
       component: () => import('../views/paste/OwnPastesView.vue')
+    },
+    {
+      path: '/create-paste',
+      name: 'createPaste',
+      component: () => import('../views/paste/OwnPastesView.vue')
+      // component: () => import('../views/paste/CreatePasteView.vue')
+    },
+    {
+      path: '/pastes/:id',
+      name: 'detailPaste',
+      component: () => import('../views/paste/DetailPasteView.vue')
     }
+    // {
+    //   path: '/:pathMatch(.*)*',
+    //   name: 'notFound',
+    //   component: () => import('../views/NotFoundView.vue')
+    // }
   ]
 })
 
