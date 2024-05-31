@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import BrandIcon from '@/components/BrandIcon.vue'
 import CenterLayout from '@/components/layouts/CenterLayout.vue'
 import UBox from '@/components/box/UBox.vue'

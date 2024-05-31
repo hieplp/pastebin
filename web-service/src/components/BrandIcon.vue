@@ -1,8 +1,8 @@
-<script setup lang="ts"></script>
+<script lang="ts" setup></script>
 
 <template>
   <div class="">
-    <a href="#" class="flex items-center mb-6 text-4xl font-semibold text-gray-900 dark:text-white">
+    <a class="flex items-center mb-6 text-4xl font-semibold text-gray-900 dark:text-white" href="#">
       Pastebin
     </a>
   </div>

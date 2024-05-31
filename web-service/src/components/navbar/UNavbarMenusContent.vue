@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 type MenuType = {
   id: string
   name: string
@@ -85,8 +85,8 @@ const menus: MenuType[] = [
         <div class="avatar">
           <div class="w-10 rounded-full">
             <img
-              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
               alt="avatar"
+              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
             />
           </div>
         </div>

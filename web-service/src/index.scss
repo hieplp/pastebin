@@ -24,3 +24,13 @@
 
 .ui-checkbox {
 }
+
+.scroller-x {
+  @apply overflow-x-auto;
+  scrollbar-width: thin;
+}
+
+.scroller-y {
+  @apply overflow-y-auto;
+  scrollbar-width: thin;
+}

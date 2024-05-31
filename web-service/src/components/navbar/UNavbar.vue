@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import UNavbarTitle from '@/components/navbar/UNavbarTitle.vue'
 import UNavbarMenu from '@/components/navbar/UNavbarMenus.vue'
 </script>

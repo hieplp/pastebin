@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import IconHamburger from '@/components/icons/IconHamburger.vue'
 import UNavbarMenusContent from '@/components/navbar/UNavbarMenusContent.vue'
 </script>
@@ -6,16 +6,16 @@ import UNavbarMenusContent from '@/components/navbar/UNavbarMenusContent.vue'
 <template>
   <div class="drawer drawer-end flex-none">
     <!-- Hamburger Button -->
-    <input id="u-nav-menus" type="checkbox" class="drawer-toggle" />
+    <input id="u-nav-menus" class="drawer-toggle" type="checkbox" />
     <div class="drawer-content">
-      <label for="u-nav-menus" class="drawer-button btn btn-square btn-ghost">
+      <label class="drawer-button btn btn-square btn-ghost" for="u-nav-menus">
         <IconHamburger />
       </label>
     </div>
 
     <!-- Drawer Content -->
     <div class="drawer-side">
-      <label for="u-nav-menus" aria-label="close sidebar" class="drawer-overlay"></label>
+      <label aria-label="close sidebar" class="drawer-overlay" for="u-nav-menus"></label>
       <UNavbarMenusContent />
     </div>
   </div>

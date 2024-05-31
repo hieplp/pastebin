@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import IconTwitter from '@/components/icons/IconTwitter.vue'
 import IconYoutube from '@/components/icons/IconYoutube.vue'
 import IconFacebook from '@/components/icons/IconFacebook.vue'
@@ -19,7 +19,9 @@ const socials: SocialType[] = [
 
 <template>
   <footer class="dark:bg-gray-800 dark:border-gray-100 justify-center flex py-5">
-    <div class="footer max-w-6xl">
+    <div
+      class="footer md:max-w-6xl flex flex-col md:flex-row justify-center md:justify-between items-center"
+    >
       <aside class="items-center grid-flow-col">
         <p>Copyright © {{ new Date().getFullYear() }} - All right reserved</p>
       </aside>
