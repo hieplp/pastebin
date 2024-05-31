@@ -2,7 +2,7 @@
 
 <template>
   <div class="">
-    <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+    <a href="#" class="flex items-center mb-6 text-4xl font-semibold text-gray-900 dark:text-white">
       Pastebin
     </a>
   </div>
