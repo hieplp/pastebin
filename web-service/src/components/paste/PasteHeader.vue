@@ -12,7 +12,7 @@ export interface PasteHeaderProps {
     <PasteHeaderName note-name="note_name" username="hieplp" />
 
     <div class="flex space-x-1">
-      <button class="btn btn-sm btn-ghost">Edit</button>
+      <a :href="`/edit-paste/:id`" class="btn btn-sm btn-ghost">Edit</a>
       <button class="btn btn-sm btn-ghost">Delete</button>
     </div>
   </div>
