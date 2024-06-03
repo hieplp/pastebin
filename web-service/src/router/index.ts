@@ -28,6 +28,11 @@ const router = createRouter({
       path: '/pastes/:id',
       name: 'detailPaste',
       component: () => import('../views/paste/DetailPasteView.vue')
+    },
+    {
+      path: '/create-paste',
+      name: 'createPaste',
+      component: () => import('../views/paste/CreatePasteView.vue')
     }
     // {
     //   path: '/:pathMatch(.*)*',
