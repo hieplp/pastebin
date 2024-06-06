@@ -1,10 +1,10 @@
 package dev.hieplp.pastebin.auth.service;
 
-import dev.hieplp.pastebin.auth.payload.request.LoginRequest;
-import dev.hieplp.pastebin.auth.payload.request.RegisterRequest;
-import dev.hieplp.pastebin.auth.payload.response.LoginResponse;
-import dev.hieplp.pastebin.auth.payload.response.RegisterResponse;
-import dev.hieplp.pastebin.auth.payload.response.TokenResponse;
+import dev.hieplp.pastebin.auth.payload.request.auth.LoginRequest;
+import dev.hieplp.pastebin.auth.payload.request.auth.RegisterRequest;
+import dev.hieplp.pastebin.auth.payload.response.auth.LoginResponse;
+import dev.hieplp.pastebin.auth.payload.response.auth.RegisterResponse;
+import dev.hieplp.pastebin.auth.payload.response.auth.TokenResponse;
 
 public interface AuthService {
     /**

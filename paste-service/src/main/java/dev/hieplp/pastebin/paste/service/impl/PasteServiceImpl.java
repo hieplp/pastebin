@@ -1,6 +1,6 @@
 package dev.hieplp.pastebin.paste.service.impl;
 
-import dev.hieplp.pastebin.common.enums.paste.PasteStatus;
+import dev.hieplp.pastebin.common.enums.paste.PastePrivacy;
 import dev.hieplp.pastebin.common.exception.AccessDeniedException;
 import dev.hieplp.pastebin.common.exception.DuplicateException;
 import dev.hieplp.pastebin.paste.entity.PasteEntity;
@@ -37,8 +37,9 @@ public class PasteServiceImpl implements PasteService {
                 .alias(request.alias())
                 .content(request.content())
                 .description(request.description())
-                .status(request.status())
+                .privacy(request.privacy())
                 .ownerId(ownerId)
+                .expiredAt(request.expiredAt())
                 .build();
 
         // Save paste entity
@@ -79,9 +80,15 @@ public class PasteServiceImpl implements PasteService {
             isUpdated = true;
         }
 
-        // If status is provided, update
-        if (ObjectUtils.isNotEmpty(request.status())) {
-            pasteEntity.setStatus(request.status());
+        // If privacy is provided, update
+        if (ObjectUtils.isNotEmpty(request.privacy())) {
+            pasteEntity.setPrivacy(request.privacy());
+            isUpdated = true;
+        }
+
+        // If expiredAt is provided, update
+        if (ObjectUtils.isNotEmpty(request.expiredAt())) {
+            pasteEntity.setExpiredAt(request.expiredAt());
             isUpdated = true;
         }
 
@@ -119,12 +126,27 @@ public class PasteServiceImpl implements PasteService {
         var pasteEntity = pasteStore.findByPasteId(pasteId);
 
         // If paste is private, validate if user is the owner of paste
-        if (PasteStatus.PRIVATE.equals(pasteEntity.getStatus())) {
+        if (PastePrivacy.PRIVATE.equals(pasteEntity.getPrivacy())) {
             validatePasteOwner(pasteEntity, userId);
+        }
+
+        // If paste is public, validate if paste is not expired
+        var now = new Timestamp(System.currentTimeMillis());
+        if (now.after(pasteEntity.getExpiredAt())) {
+            log.info("Paste: {} is expired", pasteId);
+            throw new AccessDeniedException("Paste is expired");
         }
 
         // Return paste response
         return new PasteResponse(pasteEntity);
+    }
+
+    @Override
+    public PasteResponse getByUsernameAndAlias(String username, String alias) {
+        log.info("Get paste by username: {} and alias: {}", username, alias);
+
+
+        return null;
     }
 
     private void validatePasteAlias(String alias, String ownerId) {
@@ -139,15 +161,5 @@ public class PasteServiceImpl implements PasteService {
             log.warn("User: {} is not the owner of paste: {}", ownerId, pasteEntity.getPasteId());
             throw new AccessDeniedException("User is not the owner of paste");
         }
-    }
-
-    public UpdatePasteResponse update(UpdatePasteRequest request, String pasteId, String updatedBy) {
-        log.info("Update paste by {} with request: {}", updatedBy, request);
-
-        // Find paste entity by pasteId
-        var pasteEntity = pasteStore.findByPasteId(pasteId);
-
-
-        return null;
     }
 }

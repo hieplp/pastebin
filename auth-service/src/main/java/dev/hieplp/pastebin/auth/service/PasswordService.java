@@ -1,21 +1,13 @@
 package dev.hieplp.pastebin.auth.service;
 
-import dev.hieplp.pastebin.auth.entity.PasswordEntity;
+import dev.hieplp.pastebin.auth.payload.response.user.PasswordResponse;
 
 public interface PasswordService {
     /**
-     * Generate password entity from raw password
+     * Call user-service to find password by user id
      *
-     * @param rawPassword Raw password
-     * @return Password entity
+     * @param userId id of user
+     * @return Password response
      */
-    PasswordEntity generatePassword(String rawPassword);
-
-    /**
-     * Find password entity by user id
-     *
-     * @param userId User id
-     * @return Password entity
-     */
-    PasswordEntity findById(String userId);
+    PasswordResponse findByUserId(String userId);
 }

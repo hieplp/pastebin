@@ -1,7 +1,7 @@
 package dev.hieplp.pastebin.auth.service.impl;
 
-import dev.hieplp.pastebin.auth.entity.UserEntity;
-import dev.hieplp.pastebin.auth.payload.response.TokenResponse;
+import dev.hieplp.pastebin.auth.payload.response.auth.TokenResponse;
+import dev.hieplp.pastebin.auth.payload.response.user.UserResponse;
 import dev.hieplp.pastebin.auth.service.TokenService;
 import dev.hieplp.pastebin.common.auth.TokenUtil;
 import dev.hieplp.pastebin.common.enums.token.TokenClaimKey;
@@ -33,18 +33,18 @@ public class TokenServiceImpl implements TokenService {
     private Long refreshTokenExpiration;
 
     @Override
-    public TokenResponse generate(TokenType tokenType, UserEntity user) {
+    public TokenResponse generate(TokenType tokenType, UserResponse user) {
         return generate(tokenType, user, new HashMap<>());
     }
 
     @Override
-    public TokenResponse generate(TokenType tokenType, UserEntity user, Map<String, Object> extraClaims) {
+    public TokenResponse generate(TokenType tokenType, UserResponse user, Map<String, Object> extraClaims) {
         return TokenType.REFRESH.equals(tokenType)
                 ? buildToken(user, tokenType, extraClaims, refreshTokenExpiration)
                 : buildToken(user, tokenType, extraClaims, accessTokenExpiration);
     }
 
-    private TokenResponse buildToken(UserEntity user,
+    private TokenResponse buildToken(UserResponse user,
                                      TokenType tokenType,
                                      Map<String, Object> extraClaims,
                                      long expiredIn) {
@@ -60,7 +60,7 @@ public class TokenServiceImpl implements TokenService {
     static class TokenBuilder {
         private Map<String, Object> extraClaims;
 
-        private UserEntity user;
+        private UserResponse user;
 
         private long expiredIn;
 
@@ -73,7 +73,7 @@ public class TokenServiceImpl implements TokenService {
             return this;
         }
 
-        public TokenBuilder user(UserEntity user) {
+        public TokenBuilder user(UserResponse user) {
             this.user = user;
             return this;
         }

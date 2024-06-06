@@ -1,48 +1,41 @@
 package dev.hieplp.pastebin.auth.service;
 
-import dev.hieplp.pastebin.auth.entity.UserEntity;
-import dev.hieplp.pastebin.auth.payload.response.UserResponse;
+
+import dev.hieplp.pastebin.auth.payload.request.user.CreateUserRequest;
+import dev.hieplp.pastebin.auth.payload.response.user.UserResponse;
 
 public interface UserService {
-    /**
-     * Save user
-     *
-     * @param user User entity
-     * @return Saved user entity
-     */
-    UserEntity save(UserEntity user);
 
     /**
-     * Find user by username
+     * Call user-service to create a new user
      *
-     * @param username Username
-     * @return User entity
-     * @throws dev.hieplp.pastebin.common.exception.NotFoundException if user not found
+     * @param request Create user request
+     * @return User response
      */
-    UserEntity findByUsername(String username);
+    UserResponse create(CreateUserRequest request);
 
     /**
-     * Find user by userId
+     * Call user-service to find user by username
      *
-     * @param userId UserId
-     * @return User entity
-     * @throws dev.hieplp.pastebin.common.exception.NotFoundException if user not found
+     * @param username username
+     * @return User response
      */
-    UserEntity findByUserId(String userId);
+    UserResponse findByUsername(String username);
 
     /**
-     * Check if username exists
+     * Call user-service to find user by user id
      *
-     * @param username Username
-     * @return True if username exists, otherwise false
+     * @param userId id of user
+     * @return User response
+     */
+    UserResponse findByUserId(String userId);
+
+    /**
+     * Call user-service to check if user exists by username
+     *
+     * @param username username
+     * @return true if user exists, false otherwise
      */
     boolean existsByUsername(String username);
 
-    /**
-     * Get profile of user
-     *
-     * @param userId User id
-     * @return User response
-     */
-    UserResponse getProfile(String userId);
 }

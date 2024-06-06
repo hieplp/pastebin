@@ -1,14 +1,12 @@
 package dev.hieplp.pastebin.auth.service.impl;
 
-import dev.hieplp.pastebin.auth.entity.UserEntity;
-import dev.hieplp.pastebin.auth.payload.request.LoginRequest;
-import dev.hieplp.pastebin.auth.payload.request.RegisterRequest;
-import dev.hieplp.pastebin.auth.payload.response.LoginResponse;
-import dev.hieplp.pastebin.auth.payload.response.RegisterResponse;
-import dev.hieplp.pastebin.auth.payload.response.TokenResponse;
-import dev.hieplp.pastebin.auth.payload.response.UserResponse;
+import dev.hieplp.pastebin.auth.payload.request.auth.LoginRequest;
+import dev.hieplp.pastebin.auth.payload.request.auth.RegisterRequest;
+import dev.hieplp.pastebin.auth.payload.request.user.CreateUserRequest;
+import dev.hieplp.pastebin.auth.payload.response.auth.LoginResponse;
+import dev.hieplp.pastebin.auth.payload.response.auth.RegisterResponse;
+import dev.hieplp.pastebin.auth.payload.response.auth.TokenResponse;
 import dev.hieplp.pastebin.auth.service.AuthService;
-import dev.hieplp.pastebin.auth.service.PasswordService;
 import dev.hieplp.pastebin.auth.service.TokenService;
 import dev.hieplp.pastebin.auth.service.UserService;
 import dev.hieplp.pastebin.common.enums.token.TokenType;
@@ -26,8 +24,6 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
 
-    private final PasswordService passwordService;
-
     private final TokenService tokenService;
 
     private final AuthenticationManager authenticationManager;
@@ -42,21 +38,12 @@ public class AuthServiceImpl implements AuthService {
             throw new DuplicateException("Username is already taken");
         }
 
-        // Password
-        var password = passwordService.generatePassword(request.password());
-
-        // User
-        var user = UserEntity.builder()
+        // Save user
+        var user = userService.create(CreateUserRequest.builder()
                 .username(request.username())
                 .name(request.name())
-                .build();
-
-        // Bidirectional
-        user.setPassword(password);
-        password.setUser(user);
-
-        // Save
-        user = userService.save(user);
+                .password(request.password())
+                .build());
 
         return new RegisterResponse(user);
     }
@@ -79,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
         var refreshToken = tokenService.generate(TokenType.REFRESH, user);
 
         return LoginResponse.builder()
-                .user(new UserResponse(user))
+                .user(user)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

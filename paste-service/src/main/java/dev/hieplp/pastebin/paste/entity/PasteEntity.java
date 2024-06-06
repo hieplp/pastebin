@@ -1,7 +1,7 @@
 package dev.hieplp.pastebin.paste.entity;
 
 import dev.hieplp.pastebin.common.audit.AbstractAuditEntity;
-import dev.hieplp.pastebin.common.enums.paste.PasteStatus;
+import dev.hieplp.pastebin.common.enums.paste.PastePrivacy;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -30,11 +30,13 @@ public class PasteEntity extends AbstractAuditEntity {
 
     private String ownerId;
 
-    private PasteStatus status;
+    private PastePrivacy privacy;
 
     private boolean deleted;
 
     private String deletedBy;
 
     private Timestamp deletedAt;
+
+    private Timestamp expiredAt;
 }

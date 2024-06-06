@@ -1,10 +1,10 @@
 package dev.hieplp.pastebin.auth.controller;
 
-import dev.hieplp.pastebin.auth.payload.request.LoginRequest;
-import dev.hieplp.pastebin.auth.payload.request.RegisterRequest;
-import dev.hieplp.pastebin.auth.payload.response.LoginResponse;
-import dev.hieplp.pastebin.auth.payload.response.RegisterResponse;
-import dev.hieplp.pastebin.auth.payload.response.TokenResponse;
+import dev.hieplp.pastebin.auth.payload.request.auth.LoginRequest;
+import dev.hieplp.pastebin.auth.payload.request.auth.RegisterRequest;
+import dev.hieplp.pastebin.auth.payload.response.auth.LoginResponse;
+import dev.hieplp.pastebin.auth.payload.response.auth.RegisterResponse;
+import dev.hieplp.pastebin.auth.payload.response.auth.TokenResponse;
 import dev.hieplp.pastebin.auth.service.AuthService;
 import dev.hieplp.pastebin.common.auth.UserInfoDetails;
 import dev.hieplp.pastebin.common.payload.response.CommonResponse;

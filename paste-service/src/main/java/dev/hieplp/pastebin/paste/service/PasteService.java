@@ -50,4 +50,13 @@ public interface PasteService {
      * @throws dev.hieplp.pastebin.common.exception.AccessDeniedException If user is not the owner of paste
      */
     PasteResponse get(String pasteId, String userId);
+
+    /**
+     * Get public paste by alias
+     *
+     * @param username Username
+     * @param alias    Alias
+     * @return Paste response
+     */
+    PasteResponse getByUsernameAndAlias(String username, String alias);
 }

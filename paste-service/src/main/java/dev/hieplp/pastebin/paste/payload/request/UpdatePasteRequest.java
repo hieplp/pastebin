@@ -1,11 +1,14 @@
 package dev.hieplp.pastebin.paste.payload.request;
 
-import dev.hieplp.pastebin.common.enums.paste.PasteStatus;
+import dev.hieplp.pastebin.common.enums.paste.PastePrivacy;
+
+import java.sql.Timestamp;
 
 public record UpdatePasteRequest(
         String alias,
         String description,
         String content,
-        PasteStatus status
+        PastePrivacy privacy,
+        Timestamp expiredAt
 ) {
 }

@@ -30,11 +30,11 @@ public class UserInfoService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userService.findByUsername(username);
-        var password = passwordService.findById(user.getUserId());
+        var password = passwordService.findByUserId(user.getUserId());
         return UserInfoDetails.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())
-                .password(new String(password.getPassword()))
+                .password(password.getPassword())
                 .build();
     }
 }

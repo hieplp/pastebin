@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: 8080
 
 spring:
   application:
@@ -16,7 +16,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
 ---
 application:
@@ -36,3 +36,9 @@ eureka:
     enabled: true
   instance:
     prefer-ip-address: true
+
+---
+service:
+  user:
+    internal-user: user-service/internal/users
+    internal-password: user-service/internal/password

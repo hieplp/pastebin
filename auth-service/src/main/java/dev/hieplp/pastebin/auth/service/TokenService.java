@@ -1,7 +1,7 @@
 package dev.hieplp.pastebin.auth.service;
 
-import dev.hieplp.pastebin.auth.entity.UserEntity;
-import dev.hieplp.pastebin.auth.payload.response.TokenResponse;
+import dev.hieplp.pastebin.auth.payload.response.auth.TokenResponse;
+import dev.hieplp.pastebin.auth.payload.response.user.UserResponse;
 import dev.hieplp.pastebin.common.enums.token.TokenType;
 
 import java.util.Map;
@@ -14,7 +14,7 @@ public interface TokenService {
      * @param user      User entity
      * @return Token response
      */
-    TokenResponse generate(TokenType tokenType, UserEntity user);
+    TokenResponse generate(TokenType tokenType, UserResponse user);
 
     /**
      * Generate token
@@ -24,5 +24,5 @@ public interface TokenService {
      * @param extraClaims Extra claims
      * @return Token response
      */
-    TokenResponse generate(TokenType tokenType, UserEntity user, Map<String, Object> extraClaims);
+    TokenResponse generate(TokenType tokenType, UserResponse user, Map<String, Object> extraClaims);
 }
