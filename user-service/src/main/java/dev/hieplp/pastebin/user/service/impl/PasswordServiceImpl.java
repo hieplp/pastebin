@@ -27,12 +27,6 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     @Override
-    public PasswordEntity findById(String userId) {
-        log.info("Find password by user id: {}", userId);
-        return passwordStore.findById(userId);
-    }
-
-    @Override
     public PasswordResponse findByUserId(String userId) {
         log.info("Find password by userId: {}", userId);
         var entity = passwordStore.findById(userId);

@@ -13,6 +13,19 @@ spring:
 spring:
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders:
+              - "*"
+            allowCredentials: false
+            maxAge: 3600
       routes:
         - id: api_auth
           uri: lb://auth-service

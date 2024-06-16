@@ -21,12 +21,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordService passwordService;
 
     @Override
-    public UserEntity save(UserEntity user) {
-        log.info("Save user: {}", user);
-        return userStore.save(user);
-    }
-
-    @Override
     public UserResponse findByUsername(String username) {
         log.info("Find user by username: {}", username);
         var entity = userStore.findByUsername(username);
