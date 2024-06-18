@@ -1,11 +1,12 @@
+import MD5 from 'crypto-js/md5'
+
 interface IMd5Util {
   hash: (value: string) => string
 }
 
 const Md5Util: IMd5Util = {
   hash: (value) => {
-    // TODO: Implement md5 hash
-    return value
+    return MD5(value).toString()
   }
 }
 

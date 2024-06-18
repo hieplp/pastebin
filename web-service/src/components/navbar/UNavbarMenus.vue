@@ -2,9 +2,10 @@
 import IconHamburger from '@/components/icons/IconHamburger.vue'
 import UNavbarMenusContent from '@/components/navbar/UNavbarMenusContent.vue'
 import { useUserStore } from '@/stores/user.store'
+import { computed } from 'vue'
 
 const userStore = useUserStore()
-const user = userStore.user
+const user = computed(() => userStore.user)
 </script>
 
 <template>
