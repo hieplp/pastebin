@@ -1,6 +1,14 @@
 <script lang="ts" setup>
 import UNavbar from '@/components/navbar/UNavbar.vue'
 import UFooter from '@/components/footer/UFooter.vue'
+import { useUserStore } from '@/stores/user.store'
+import { onMounted } from 'vue'
+
+const userStore = useUserStore()
+
+onMounted(() => {
+  userStore.loadUserFromLocalStorage()
+})
 </script>
 
 <template>

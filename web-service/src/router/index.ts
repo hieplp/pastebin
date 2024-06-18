@@ -1,4 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import CookieUtil from '@/utils/cookie.util'
+import CookieConstants from '@/constants/CookieConstants'
+
+const isAuthenticated = (to: any, from: any, next: any) => {
+  if (CookieUtil.exists(CookieConstants.REFRESH_TOKEN)) {
+    next()
+    return
+  }
+
+  next({ name: 'signIn', query: { redirect: to.fullPath } })
+}
+
+const isNotAuthenticated = (to: any, from: any, next: any) => {
+  if (!CookieUtil.exists(CookieConstants.REFRESH_TOKEN)) {
+    next()
+    return
+  }
+
+  next({ name: 'ownPastes' })
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -6,16 +26,18 @@ const router = createRouter({
     {
       path: '/sign-in',
       name: 'signIn',
-      component: () => import('../views/auth/SignInView.vue')
+      component: () => import('../views/auth/SignInView.vue'),
+      beforeEnter: isNotAuthenticated
     },
     {
       path: '/sign-up',
       name: 'signUp',
-      component: () => import('../views/auth/SignUpView.vue')
+      component: () => import('../views/auth/SignUpView.vue'),
+      beforeEnter: isNotAuthenticated
     },
     {
       path: '/own-pastes',
-      name: 'pastes',
+      name: 'ownPastes',
       component: () => import('../views/paste/OwnPastesView.vue')
     },
     {
@@ -37,13 +59,9 @@ const router = createRouter({
     {
       path: '/create-paste',
       name: 'createPaste',
-      component: () => import('../views/paste/CreatePasteView.vue')
+      component: () => import('../views/paste/CreatePasteView.vue'),
+      beforeEnter: isAuthenticated
     }
-    // {
-    //   path: '/:pathMatch(.*)*',
-    //   name: 'notFound',
-    //   component: () => import('../views/NotFoundView.vue')
-    // }
   ]
 })
 

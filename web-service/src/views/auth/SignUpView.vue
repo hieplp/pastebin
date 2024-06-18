@@ -2,15 +2,13 @@
 import { reactive } from 'vue'
 import AuthLayout from '@/components/layouts/AuthLayout.vue'
 import AuthService from '@/services/auth.service'
+import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
+import ErrorCode from '@/constants/ErrorCode'
+import Md5Util from '@/utils/md5.util'
 
+// ----------------------------------------
 const form = reactive({
-  username: '',
-  password: '',
-  name: '',
-  confirmPassword: ''
-})
-
-const formErrorsMessage = reactive({
   username: '',
   password: '',
   name: '',
@@ -24,23 +22,40 @@ const formErrors = reactive({
   confirmPassword: false
 })
 
+const formErrorsMessage = reactive({
+  username: '',
+  password: '',
+  name: '',
+  confirmPassword: ''
+})
+
+// ----------------------------------------
+const router = useRouter()
+
+const toast = useToast()
+
+// ----------------------------------------
 const handleRegister = () => {
   if (!validateForm()) {
-    console.log('Form is invalid')
     return
   }
 
   AuthService.register({
     username: form.username,
     name: form.name,
-    // TODO: Hash password before sending to the server. Maybe encrypt too
-    password: form.password
+    password: Md5Util.hash(form.password)
   })
     .then(() => {
-      console.log('Register successfully')
+      toast.success('Register successfully')
+      router.push('/sign-in')
     })
     .catch((error) => {
-      console.error(error)
+      switch (error) {
+        case ErrorCode.DUPLICATED:
+          formErrors.username = true
+          formErrorsMessage.username = 'Username is already taken'
+          break
+      }
     })
 }
 
@@ -82,7 +97,7 @@ const validateForm = () => {
     formErrorsMessage.confirmPassword = 'Password and confirm password do not match'
   }
 
-  return !Object.values(formErrors).some((error) => error)
+  return Object.values(formErrors).every((error) => !error)
 }
 </script>
 

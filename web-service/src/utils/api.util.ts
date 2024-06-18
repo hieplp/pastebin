@@ -4,6 +4,7 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig
 } from 'axios'
+import SuccessCode from '@/constants/SuccessCode'
 
 const BASE_URL = 'http://localhost:8080/api'
 
@@ -36,7 +37,12 @@ instance.interceptors.request.use(
 )
 
 const handleSuccess = (response: AxiosResponse): any => {
-  return response.data
+  const data = response.data
+  if (SuccessCode.SUCCESS === data.code) {
+    return Promise.resolve(data.data)
+  }
+
+  return Promise.reject(data.code)
 }
 
 const handleError = (error: AxiosError): any => {

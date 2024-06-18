@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+import { useRouter } from 'vue-router'
+import CookieUtil from '@/utils/cookie.util'
+import CookieConstants from '@/constants/CookieConstants'
+import type UserType from '@/types/user.type'
+
 type MenuType = {
   id: string
   name: string
@@ -10,6 +15,10 @@ type MenuItemType = {
   id: string
   name: string
   url: string
+}
+
+export interface UNavbarMenusContentProps {
+  user: UserType
 }
 
 const menus: MenuType[] = [
@@ -46,6 +55,19 @@ const menus: MenuType[] = [
     ]
   }
 ]
+
+// ----------------------------------------
+const { user } = defineProps<UNavbarMenusContentProps>()
+
+// ----------------------------------------
+const router = useRouter()
+
+// ----------------------------------------
+const signOut = () => {
+  CookieUtil.delete(CookieConstants.REFRESH_TOKEN)
+  CookieUtil.delete(CookieConstants.ACCESS_TOKEN)
+  router.push('/sign-in')
+}
 </script>
 
 <template>
@@ -91,10 +113,12 @@ const menus: MenuType[] = [
           </div>
         </div>
 
-        <p class="text-lg">Hi, <strong>John Doe</strong></p>
+        <p class="text-lg">
+          Hi, <strong>{{ user?.name }}</strong>
+        </p>
 
         <!-- Logout -->
-        <button class="btn btn-ghost ml-auto text-red-500">Sign out</button>
+        <button class="btn btn-ghost ml-auto text-red-500" @click="signOut">Sign out</button>
       </div>
     </li>
   </ul>

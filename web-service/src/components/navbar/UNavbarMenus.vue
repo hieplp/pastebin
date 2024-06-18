@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import IconHamburger from '@/components/icons/IconHamburger.vue'
 import UNavbarMenusContent from '@/components/navbar/UNavbarMenusContent.vue'
+import { useUserStore } from '@/stores/user.store'
+
+const userStore = useUserStore()
+const user = userStore.user
 </script>
 
 <template>
@@ -16,7 +20,7 @@ import UNavbarMenusContent from '@/components/navbar/UNavbarMenusContent.vue'
     <!-- Drawer Content -->
     <div class="drawer-side">
       <label aria-label="close sidebar" class="drawer-overlay" for="u-nav-menus"></label>
-      <UNavbarMenusContent />
+      <UNavbarMenusContent :user="user" />
     </div>
   </div>
 </template>
