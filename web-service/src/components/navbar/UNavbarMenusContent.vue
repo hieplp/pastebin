@@ -3,6 +3,9 @@ import { useRouter } from 'vue-router'
 import CookieUtil from '@/utils/cookie.util'
 import CookieConstants from '@/constants/CookieConstants'
 import type UserType from '@/types/user.type'
+import AuthService from '@/services/auth.service'
+import { LocalStorage } from '@/utils/storage.util'
+import StorageConstants from '@/constants/StorageConstants'
 
 type MenuType = {
   id: string
@@ -64,9 +67,11 @@ const router = useRouter()
 
 // ----------------------------------------
 const signOut = () => {
-  CookieUtil.delete(CookieConstants.REFRESH_TOKEN)
-  CookieUtil.delete(CookieConstants.ACCESS_TOKEN)
-  router.push('/sign-in')
+  AuthService.logout().then(() => {
+    CookieUtil.delete(CookieConstants.USER_ID)
+    LocalStorage.delete(StorageConstants.USER)
+    router.push('/sign-in')
+  })
 }
 </script>
 

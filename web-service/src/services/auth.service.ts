@@ -2,11 +2,12 @@ import type LoginRequest from '@/types/payload/auth/login.req'
 import type LoginResponse from '@/types/payload/auth/login.res'
 import type RegisterRequest from '@/types/payload/auth/register.req'
 import type RegisterResponse from '@/types/payload/auth/register.res'
-import { NonAuthApiUtil } from '@/utils/api.util'
+import { ApiUtil, NonAuthApiUtil } from '@/utils/api.util'
 
 interface IAuthService {
   register: (request: RegisterRequest) => Promise<RegisterResponse>
   login: (request: LoginRequest) => Promise<LoginResponse>
+  logout: () => Promise<void>
 }
 
 const AuthService: IAuthService = {
@@ -27,6 +28,18 @@ const AuthService: IAuthService = {
       NonAuthApiUtil.post('/auth/login', request)
         .then((response) => {
           resolve(response)
+        })
+        .catch((error) => {
+          reject(error)
+        })
+    })
+  },
+
+  logout: () => {
+    return new Promise((resolve, reject) => {
+      ApiUtil.delete('/auth/logout')
+        .then(() => {
+          resolve()
         })
         .catch((error) => {
           reject(error)

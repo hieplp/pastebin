@@ -7,6 +7,7 @@ import axios, {
 import SuccessCode from '@/constants/SuccessCode'
 
 const BASE_URL = 'http://localhost:8080/api'
+const WEB_URL = 'http://localhost:5173'
 
 const instance = axios.create({
   baseURL: BASE_URL,
@@ -20,7 +21,8 @@ const nonAuthInstance = axios.create({
   baseURL: BASE_URL,
   timeout: 1000,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': WEB_URL
   }
 })
 
@@ -57,25 +59,93 @@ interface IApiUtil {
   get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>
 
   post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>
+
+  put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>
+
+  delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>
 }
 
 const ApiUtil: IApiUtil = {
   get: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    return instance.get<T>(url, config).then(handleSuccess).catch(handleError)
+    return instance
+      .get<T>(url, {
+        ...config,
+        withCredentials: true
+      })
+      .then(handleSuccess)
+      .catch(handleError)
   },
 
   post: async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
-    return instance.post<T>(url, data, config).then(handleSuccess).catch(handleError)
+    return instance
+      .post<T>(url, data, {
+        ...config,
+        withCredentials: true
+      })
+      .then(handleSuccess)
+      .catch(handleError)
+  },
+
+  put: async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
+    return instance
+      .put<T>(url, data, {
+        ...config,
+        withCredentials: true
+      })
+      .then(handleSuccess)
+      .catch(handleError)
+  },
+
+  delete: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    return instance
+      .delete<T>(url, {
+        ...config,
+        withCredentials: true
+      })
+      .then(handleSuccess)
+      .catch(handleError)
   }
 }
 
 const NonAuthApiUtil: IApiUtil = {
   get: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    return nonAuthInstance.get<T>(url, config).then(handleSuccess).catch(handleError)
+    return nonAuthInstance
+      .get<T>(url, {
+        ...config,
+        withCredentials: true
+      })
+      .then(handleSuccess)
+      .catch(handleError)
   },
 
   post: async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
-    return nonAuthInstance.post<T>(url, data, config).then(handleSuccess).catch(handleError)
+    return nonAuthInstance
+      .post<T>(url, data, {
+        ...config,
+        withCredentials: true
+      })
+      .then(handleSuccess)
+      .catch(handleError)
+  },
+
+  put: async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
+    return nonAuthInstance
+      .put<T>(url, data, {
+        ...config,
+        withCredentials: true
+      })
+      .then(handleSuccess)
+      .catch(handleError)
+  },
+
+  delete: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    return nonAuthInstance
+      .delete<T>(url, {
+        ...config,
+        withCredentials: true
+      })
+      .then(handleSuccess)
+      .catch(handleError)
   }
 }
 

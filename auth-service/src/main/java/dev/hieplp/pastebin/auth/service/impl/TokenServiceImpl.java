@@ -99,7 +99,7 @@ public class TokenServiceImpl implements TokenService {
             }
 
             extraClaims.put(TokenClaimKey.USER_ID.getKey(), user.getUserId());
-            extraClaims.put(TokenClaimKey.TYPE.getKey(), tokenType.name());
+            extraClaims.put(TokenClaimKey.TYPE.getKey(), tokenType.getValue());
 
             var expiredAt = new Date(System.currentTimeMillis() + expiredIn);
 

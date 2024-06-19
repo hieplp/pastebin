@@ -3,7 +3,7 @@ import CookieUtil from '@/utils/cookie.util'
 import CookieConstants from '@/constants/CookieConstants'
 
 const isAuthenticated = (to: any, from: any, next: any) => {
-  if (CookieUtil.exists(CookieConstants.REFRESH_TOKEN)) {
+  if (CookieUtil.exists(CookieConstants.USER_ID)) {
     next()
     return
   }
@@ -12,7 +12,7 @@ const isAuthenticated = (to: any, from: any, next: any) => {
 }
 
 const isNotAuthenticated = (to: any, from: any, next: any) => {
-  if (!CookieUtil.exists(CookieConstants.REFRESH_TOKEN)) {
+  if (!CookieUtil.exists(CookieConstants.USER_ID)) {
     next()
     return
   }
@@ -38,14 +38,15 @@ const router = createRouter({
     {
       path: '/own-pastes',
       name: 'ownPastes',
-      component: () => import('../views/paste/OwnPastesView.vue')
+      component: () => import('../views/paste/OwnPastesView.vue'),
+      beforeEnter: isAuthenticated
     },
-    {
-      path: '/create-paste',
-      name: 'createPaste',
-      component: () => import('../views/paste/OwnPastesView.vue')
-      // component: () => import('../views/paste/CreatePasteView.vue')
-    },
+    // {
+    //   path: '/create-paste',
+    //   name: 'createPaste',
+    //   component: () => import('../views/paste/OwnPastesView.vue')
+    //   // component: () => import('../views/paste/CreatePasteView.vue')
+    // },
     {
       path: '/pastes/:id',
       name: 'detailPaste',

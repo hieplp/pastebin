@@ -26,19 +26,20 @@ public abstract class AbstractJwtAuthFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            // Get token from header
-            final var jwt = getTokenFromHeader(request);
+
+            // Determine token type
+            var tokenType = request.getServletPath().contains("/auth/refresh")
+                    ? TokenType.REFRESH
+                    : TokenType.ACCESS;
+
+            // Get token from cookies
+            var jwt = getTokenFromCookie(request, tokenType.getValue());
 
             // Request does not contain token. Let Spring Security handle it.
             if (ObjectUtils.isEmpty(jwt)) {
                 filterChain.doFilter(request, response);
                 return;
             }
-
-            // Determine token type
-            var tokenType = request.getServletPath().contains("/auth/refresh")
-                    ? TokenType.REFRESH
-                    : TokenType.ACCESS;
 
             // Validate token
             var userDetails = TokenUtil.validate(secretKey, tokenType, jwt);
@@ -54,11 +55,13 @@ public abstract class AbstractJwtAuthFilter extends OncePerRequestFilter {
         }
     }
 
-    private String getTokenFromHeader(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return null;
+    private String getTokenFromCookie(HttpServletRequest request, String name) {
+        final var cookies = request.getCookies();
+        for (var cookie : cookies) {
+            if (name.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
         }
-        return authHeader.substring(7);
+        return null;
     }
 }

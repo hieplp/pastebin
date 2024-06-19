@@ -12,6 +12,16 @@ const form = reactive({
   privacy: PrivacyConstants.Options[0].id
 })
 
+const formErrors = reactive({
+  title: '',
+  content: ''
+})
+
+const formErrorMessages = reactive({
+  title: '',
+  content: ''
+})
+
 function handleCreate() {
   console.log('form', form)
 }

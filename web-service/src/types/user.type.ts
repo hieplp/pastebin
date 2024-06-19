@@ -1,5 +1,5 @@
 export default interface UserType {
-  id: number
+  userId: string
   username: string
   name: string
   password: string

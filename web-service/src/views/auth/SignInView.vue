@@ -8,8 +8,8 @@ import Md5Util from '@/utils/md5.util'
 import ErrorCode from '@/constants/ErrorCode'
 import CookieUtil from '@/utils/cookie.util'
 import CookieConstants from '@/constants/CookieConstants'
-import { LocalStorage } from '@/utils/storage.util'
 import StorageConstants from '@/constants/StorageConstants'
+import { LocalStorage } from '@/utils/storage.util'
 
 // ----------------------------------------
 const form = reactive({
@@ -47,10 +47,9 @@ const handleLogin = () => {
     password: Md5Util.hash(form.password)
   })
     .then((data) => {
-      const { accessToken, refreshToken, user } = data
+      const { refreshToken, user } = data
 
-      CookieUtil.save(CookieConstants.ACCESS_TOKEN, accessToken.token, accessToken.expiredAt)
-      CookieUtil.save(CookieConstants.REFRESH_TOKEN, refreshToken.token, refreshToken.expiredAt)
+      CookieUtil.save(CookieConstants.USER_ID, user.userId, refreshToken.expiredAt)
 
       LocalStorage.set(StorageConstants.USER, user)
 
@@ -122,7 +121,7 @@ const resetError = () => {
           class="input input-bordered w-full"
           name="password"
           placeholder="••••••••"
-          type="text"
+          type="password"
         />
         <label v-if="formErrors.password" class="label label-text-alt text-error">
           {{ formErrorsMessage.password }}
@@ -133,7 +132,7 @@ const resetError = () => {
         <div class="form-control">
           <label class="label cursor-pointer">
             <input v-model="form.rememberMe" checked class="checkbox checkbox-sm" type="checkbox" />
-            <span class="label-text ml-2">Remember me</span>
+            <span class="label-text ml-2"> Remember me </span>
           </label>
         </div>
 

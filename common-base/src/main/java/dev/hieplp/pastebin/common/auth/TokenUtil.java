@@ -29,7 +29,7 @@ public class TokenUtil {
         }
 
         final var type = extractType(claims);
-        if (!tokenType.name().equals(type)) {
+        if (!tokenType.getValue().equals(type)) {
             log.warn("Token type is invalid: {}", type);
             throw new UnauthorizedException("Token type is invalid");
         }
