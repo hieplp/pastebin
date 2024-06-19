@@ -8,9 +8,12 @@ import type OptionType from '@/types/option.type'
 
 interface UCodeMirrorProps {
   modelValue: string
+  error: boolean
+  errorMessage: string
+  disabled?: boolean
 }
 
-const { modelValue } = defineProps<UCodeMirrorProps>()
+const { modelValue, error, errorMessage, disabled } = defineProps<UCodeMirrorProps>()
 
 const emit = defineEmits<{
   (event: 'update:modelValue', ...args: any[]): void
@@ -61,6 +64,7 @@ function handleReady(payload: any) {
     <Codemirror
       v-model="inputModel"
       :autofocus="true"
+      :disabled="disabled"
       :extensions="extensions"
       :indent-with-tab="true"
       :style="{ height: '400px' }"
@@ -69,6 +73,10 @@ function handleReady(payload: any) {
       placeholder="Code goes here..."
       @ready="handleReady"
     />
+
+    <label v-if="error" class="label label-text-alt text-error">
+      {{ errorMessage }}
+    </label>
   </div>
 </template>
 

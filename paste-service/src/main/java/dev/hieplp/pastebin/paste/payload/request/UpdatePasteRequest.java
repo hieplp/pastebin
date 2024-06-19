@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 public record UpdatePasteRequest(
         String alias,
-        String description,
+        String title,
         String content,
         PastePrivacy privacy,
         Timestamp expiredAt

@@ -1,8 +1,8 @@
 import type OptionType from '@/types/option.type'
 
 const PrivacyTypes = {
-  Public: 'public',
-  Private: 'private'
+  Public: 'PUBLIC',
+  Private: 'PRIVATE'
 }
 
 const PrivacyConstants = {
@@ -10,12 +10,12 @@ const PrivacyConstants = {
   Options: [
     {
       id: PrivacyTypes.Public,
-      value: 'public',
+      value: 'PUBLIC',
       label: 'Public'
     },
     {
       id: PrivacyTypes.Private,
-      value: 'private',
+      value: 'PRIVATE',
       label: 'Private'
     }
   ] as OptionType[]

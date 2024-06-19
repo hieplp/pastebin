@@ -19,12 +19,11 @@ import java.sql.Timestamp;
 @Table(name = "paste")
 public class PasteEntity extends AbstractAuditEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String pasteId;
 
     private String alias;
 
-    private String description;
+    private String title;
 
     private String content;
 

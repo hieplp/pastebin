@@ -20,7 +20,7 @@ public class PasteResponse {
     public PasteResponse(PasteEntity entity) {
         this.pasteId = entity.getPasteId();
         this.alias = entity.getAlias();
-        this.description = entity.getDescription();
+        this.description = entity.getTitle();
         this.content = entity.getContent();
         this.ownerId = entity.getOwnerId();
     }

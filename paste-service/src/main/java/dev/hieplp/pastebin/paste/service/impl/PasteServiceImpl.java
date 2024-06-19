@@ -17,6 +17,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -33,11 +34,13 @@ public class PasteServiceImpl implements PasteService {
         validatePasteAlias(request.alias(), ownerId);
 
         // Create paste entity
+        final var pasteId = UUID.randomUUID().toString();
         var pasteEntity = PasteEntity.builder()
-                .alias(request.alias())
+                .pasteId(pasteId)
+                .alias(ObjectUtils.defaultIfNull(request.alias(), pasteId))
                 .content(request.content())
-                .description(request.description())
-                .privacy(request.privacy())
+                .title(request.title())
+                .privacy(PastePrivacy.valueOf(request.privacy()))
                 .ownerId(ownerId)
                 .expiredAt(request.expiredAt())
                 .build();
@@ -68,9 +71,9 @@ public class PasteServiceImpl implements PasteService {
             isUpdated = true;
         }
 
-        // If description is provided, update
-        if (ObjectUtils.isNotEmpty(request.description())) {
-            pasteEntity.setDescription(request.description());
+        // If title is provided, update
+        if (ObjectUtils.isNotEmpty(request.title())) {
+            pasteEntity.setTitle(request.title());
             isUpdated = true;
         }
 
@@ -150,6 +153,10 @@ public class PasteServiceImpl implements PasteService {
     }
 
     private void validatePasteAlias(String alias, String ownerId) {
+        if (ObjectUtils.isEmpty(alias)) {
+            return;
+        }
+
         if (pasteStore.existsByAliasAndOwnerId(alias, ownerId)) {
             log.warn("Alias: {} is already taken", alias);
             throw new DuplicateException("Alias is already taken");

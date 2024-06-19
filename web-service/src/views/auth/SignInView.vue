@@ -62,7 +62,6 @@ const handleLogin = () => {
       }
     })
     .catch((error) => {
-      console.log(error)
       switch (error) {
         case ErrorCode.UNAUTHORIZED:
           formErrors.password = true
