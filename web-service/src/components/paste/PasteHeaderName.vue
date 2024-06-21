@@ -1,10 +1,16 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
+
 export interface PasteHeaderProps {
+  pasteId: string
   username: string
   noteName: string
 }
 
-const { username, noteName } = defineProps<PasteHeaderProps>()
+const { username, noteName, pasteId } = defineProps<PasteHeaderProps>()
+
+const pasteUrl = computed(() => `/pastes/${pasteId}`)
+
 </script>
 
 <template>
@@ -13,7 +19,7 @@ const { username, noteName } = defineProps<PasteHeaderProps>()
       {{ username }}
     </a>
     <p class="text-gray-500">/</p>
-    <a class="font-bold hover:underline" href="">
+    <a class="font-bold hover:underline" :href="pasteUrl">
       {{ noteName }}
     </a>
   </div>

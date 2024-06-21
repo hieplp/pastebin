@@ -1,6 +1,6 @@
 export default interface PasteType {
-  id: number
-  name: string
-  description: string
-  contents: string[]
+  pasteId: number
+  title: string
+  alias: string
+  content: string
 }

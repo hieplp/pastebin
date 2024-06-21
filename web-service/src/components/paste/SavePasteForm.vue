@@ -40,7 +40,7 @@ const form = computed({
 <template>
   <div class="space-y-3">
     <label class="form-control w-full">
-      <span class="label label-text"> Title </span>
+      <span class="label label-text"> Title (*) </span>
       <input
         v-model="form.title"
         :disabled="disabled"
@@ -55,7 +55,7 @@ const form = computed({
     </label>
 
     <label class="form-control w-full">
-      <span class="label label-text"> Alias </span>
+      <span class="label label-text"> Alias (*) </span>
       <input
         v-model="form.alias"
         :disabled="disabled"
@@ -78,7 +78,7 @@ const form = computed({
 
     <div class="grid grid-cols-2 space-x-2">
       <label class="form-control w-full flex-1">
-        <span class="label label-text"> Expiry </span>
+        <span class="label label-text"> Expiry (*) </span>
         <select v-model="form.expiry" :disabled="disabled" class="select">
           <option v-for="option in ExpiryConstants.Options" :key="option.id" :value="option.value">
             {{ option.label }}
@@ -87,7 +87,7 @@ const form = computed({
       </label>
 
       <label class="form-control w-full flex-1">
-        <span class="label label-text"> Privacy </span>
+        <span class="label label-text"> Privacy (*) </span>
         <select v-model="form.privacy" :disabled="disabled" class="select">
           <option v-for="option in PrivacyConstants.Options" :key="option.id" :value="option.value">
             {{ option.label }}

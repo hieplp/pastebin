@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 public class PasteResponse {
     private String pasteId;
     private String alias;
-    private String description;
+    private String title;
     private String content;
     private String ownerId;
 
     public PasteResponse(PasteEntity entity) {
         this.pasteId = entity.getPasteId();
         this.alias = entity.getAlias();
-        this.description = entity.getTitle();
+        this.title = entity.getTitle();
         this.content = entity.getContent();
         this.ownerId = entity.getOwnerId();
     }

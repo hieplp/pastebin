@@ -1,6 +1,8 @@
 package dev.hieplp.pastebin.paste.store;
 
 import dev.hieplp.pastebin.paste.entity.PasteEntity;
+import dev.hieplp.pastebin.paste.payload.request.GetOwnPastesRequest;
+import org.springframework.data.domain.Page;
 
 public interface PasteStore {
     /**
@@ -28,4 +30,11 @@ public interface PasteStore {
      * @return True if paste exists, false otherwise
      */
     boolean existsByAliasAndOwnerId(String alias, String ownerId);
+
+    /**
+     * @param request Get own pastes request
+     * @param ownerId Owner id
+     * @return
+     */
+    Page<PasteEntity> getOwnPastes(GetOwnPastesRequest request, String ownerId);
 }

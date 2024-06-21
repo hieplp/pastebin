@@ -1,10 +1,14 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
+
 export type PasteContentsProps = {
-  contents: string[]
   className?: string
+  content: string
 }
 
-const { contents } = defineProps<PasteContentsProps>()
+const { content } = defineProps<PasteContentsProps>()
+
+const contents = computed(() => content?.split('\n'))
 </script>
 
 <template>

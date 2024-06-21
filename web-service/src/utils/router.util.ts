@@ -1,4 +1,5 @@
-interface IRouterUtil {}
+interface IRouterUtil {
+}
 
 const RouterUtil: IRouterUtil = {}
 

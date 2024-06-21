@@ -8,18 +8,23 @@ type OverviewPasteProps = {
 }
 
 const { paste } = defineProps<OverviewPasteProps>()
+
 </script>
 
 <template>
   <div class="p-6 space-y-3">
     <div class="flex flex-col space-y-1">
-      <PasteHeader :paste="paste" />
+      <PasteHeader
+        :paste-id="paste.pasteId"
+        :note-name="paste.alias"
+        username="hieplp"
+      />
       <p class="text-gray-400 line-clamp-3">
-        {{ paste.description }}
+        {{ paste.title }}
       </p>
     </div>
 
-    <PasteContents :contents="paste.contents" class="max-h-60 overflow-y-hidden" />
+    <PasteContents :content="paste.content" class="max-h-60 overflow-y-hidden" />
   </div>
 </template>
 

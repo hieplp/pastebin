@@ -1,1 +1,2 @@
-export default interface CreatePasteResponse {}
+export default interface CreatePasteResponse {
+}

@@ -1,9 +1,4 @@
-import axios, {
-  AxiosError,
-  type AxiosRequestConfig,
-  type AxiosResponse,
-  type InternalAxiosRequestConfig
-} from 'axios'
+import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
 import SuccessCode from '@/constants/SuccessCode'
 
 const BASE_URL = 'http://localhost:8080/api'

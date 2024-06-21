@@ -2,14 +2,25 @@
 import PasteHeaderName from '@/components/paste/PasteHeaderName.vue'
 
 export interface PasteHeaderProps {
+  pasteId: string
   noteName: string
   username: string
 }
+
+const {
+  pasteId,
+  noteName,
+  username
+} = defineProps<PasteHeaderProps>()
 </script>
 
 <template>
   <div class="flex justify-between items-center">
-    <PasteHeaderName note-name="note_name" username="hieplp" />
+    <PasteHeaderName
+      :paste-id="pasteId"
+      :note-name="noteName"
+      :username="username"
+    />
 
     <div class="flex space-x-1">
       <a :href="`/edit-paste/:id`" class="btn btn-sm btn-ghost">Edit</a>

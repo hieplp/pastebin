@@ -3,8 +3,10 @@ package dev.hieplp.pastebin.paste.service.impl;
 import dev.hieplp.pastebin.common.enums.paste.PastePrivacy;
 import dev.hieplp.pastebin.common.exception.AccessDeniedException;
 import dev.hieplp.pastebin.common.exception.DuplicateException;
+import dev.hieplp.pastebin.common.payload.response.CommonPaginationResponse;
 import dev.hieplp.pastebin.paste.entity.PasteEntity;
 import dev.hieplp.pastebin.paste.payload.request.CreatePasteRequest;
+import dev.hieplp.pastebin.paste.payload.request.GetOwnPastesRequest;
 import dev.hieplp.pastebin.paste.payload.request.UpdatePasteRequest;
 import dev.hieplp.pastebin.paste.payload.response.CreatePasteResponse;
 import dev.hieplp.pastebin.paste.payload.response.PasteResponse;
@@ -147,9 +149,17 @@ public class PasteServiceImpl implements PasteService {
     @Override
     public PasteResponse getByUsernameAndAlias(String username, String alias) {
         log.info("Get paste by username: {} and alias: {}", username, alias);
-
-
         return null;
+    }
+
+    @Override
+    public CommonPaginationResponse<PasteResponse> getOwnPastes(GetOwnPastesRequest request, String ownerId) {
+        log.info("Get own pastes by {} with request: {}", ownerId, request);
+        var page = pasteStore.getOwnPastes(request, ownerId);
+        var pastes = page.getContent().stream()
+                .map(PasteResponse::new)
+                .toList();
+        return new CommonPaginationResponse<>(page, pastes);
     }
 
     private void validatePasteAlias(String alias, String ownerId) {

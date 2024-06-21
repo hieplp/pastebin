@@ -1,6 +1,8 @@
 package dev.hieplp.pastebin.paste.service;
 
+import dev.hieplp.pastebin.common.payload.response.CommonPaginationResponse;
 import dev.hieplp.pastebin.paste.payload.request.CreatePasteRequest;
+import dev.hieplp.pastebin.paste.payload.request.GetOwnPastesRequest;
 import dev.hieplp.pastebin.paste.payload.request.UpdatePasteRequest;
 import dev.hieplp.pastebin.paste.payload.response.CreatePasteResponse;
 import dev.hieplp.pastebin.paste.payload.response.PasteResponse;
@@ -59,4 +61,13 @@ public interface PasteService {
      * @return Paste response
      */
     PasteResponse getByUsernameAndAlias(String username, String alias);
+
+    /**
+     * Get own pastes
+     *
+     * @param request Get own pastes request
+     * @param ownerId Owner id
+     * @return Common pagination response of paste response
+     */
+    CommonPaginationResponse<PasteResponse> getOwnPastes(GetOwnPastesRequest request, String ownerId);
 }

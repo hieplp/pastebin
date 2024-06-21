@@ -2,7 +2,10 @@ package dev.hieplp.pastebin.paste.entity;
 
 import dev.hieplp.pastebin.common.audit.AbstractAuditEntity;
 import dev.hieplp.pastebin.common.enums.paste.PastePrivacy;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -25,6 +28,7 @@ public class PasteEntity extends AbstractAuditEntity {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private String ownerId;

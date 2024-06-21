@@ -1,8 +1,10 @@
 package dev.hieplp.pastebin.paste.controller;
 
 import dev.hieplp.pastebin.common.auth.UserInfoDetails;
+import dev.hieplp.pastebin.common.payload.response.CommonPaginationResponse;
 import dev.hieplp.pastebin.common.payload.response.CommonResponse;
 import dev.hieplp.pastebin.paste.payload.request.CreatePasteRequest;
+import dev.hieplp.pastebin.paste.payload.request.GetOwnPastesRequest;
 import dev.hieplp.pastebin.paste.payload.request.UpdatePasteRequest;
 import dev.hieplp.pastebin.paste.payload.response.CreatePasteResponse;
 import dev.hieplp.pastebin.paste.payload.response.PasteResponse;
@@ -51,6 +53,14 @@ public class PasteController {
                                              @AuthenticationPrincipal UserInfoDetails userDetails) {
         log.debug("Get paste with pasteId: {}", pasteId);
         var response = pasteService.get(pasteId, userDetails.getUserId());
+        return CommonResponse.success(response);
+    }
+
+    @GetMapping("/own")
+    public CommonResponse<CommonPaginationResponse<PasteResponse>> getOwnPastes(GetOwnPastesRequest request,
+                                                                                @AuthenticationPrincipal UserInfoDetails userDetails) {
+        log.debug("Get own pastes with request: {}", request);
+        var response = pasteService.getOwnPastes(request, userDetails.getUserId());
         return CommonResponse.success(response);
     }
 }
