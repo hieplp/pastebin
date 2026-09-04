@@ -1,5 +1,0 @@
-CREATE
-DATABASE keys;
-
-CREATE
-DATABASE users;

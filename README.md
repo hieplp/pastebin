@@ -1,2 +1,0 @@
-pastebin
-Simple Pastebin
