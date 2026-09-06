@@ -13,11 +13,11 @@ export interface ShortcutOptions {
   enabled?: boolean
 }
 
-// ponytail: window/target keyboard shortcut listener with modifier support
+// window/target keyboard shortcut listener with modifier support
 export function useShortcut(
   key: string,
   handler: (e: KeyboardEvent) => void,
-  options: ShortcutOptions = {}
+  options: ShortcutOptions = {},
 ) {
   const {
     metaOrCtrl = false,

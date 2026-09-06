@@ -1,4 +1,4 @@
-import type { SelectOption } from './components/ui/Select'
+import type { SelectOption } from '@/types'
 
 export const EXTENSION_MAP: Record<string, string> = {
   js: 'javascript',
@@ -16,6 +16,21 @@ export const EXTENSION_MAP: Record<string, string> = {
   sh: 'bash',
   bash: 'bash',
   txt: 'plaintext',
+}
+
+export const SYNTAX_TO_EXT: Record<string, string> = {
+  javascript: 'js',
+  typescript: 'ts',
+  python: 'py',
+  json: 'json',
+  markdown: 'md',
+  html: 'html',
+  css: 'css',
+  sql: 'sql',
+  rust: 'rs',
+  go: 'go',
+  bash: 'sh',
+  plaintext: 'txt',
 }
 
 export const SYNTAX_OPTIONS: SelectOption[] = [

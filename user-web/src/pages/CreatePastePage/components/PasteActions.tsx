@@ -1,30 +1,24 @@
-import { cn } from '@/lib/utils'
 import { LoadingButton } from '@/components/ui'
 
-export interface PasteActionsProps {
-  canClear: boolean
-  canSubmit: boolean
-  submitting: boolean
-  onClear: () => void
-  onSubmit: () => void
-  className?: string
+interface PasteAction {
+  onClick: () => void
+  loading?: boolean
+  enabled: boolean
 }
 
-// ponytail: primary draft reset and paste creation button group
-export function PasteActions({
-  canClear,
-  canSubmit,
-  submitting,
-  onClear,
-  onSubmit,
-  className,
-}: PasteActionsProps) {
+interface PasteActionsProps {
+  clear: PasteAction
+  submit: PasteAction
+}
+
+export function PasteActions({ clear, submit }: PasteActionsProps) {
+  /* ---- Render ---- */
   return (
-    <div className={cn('flex items-center justify-between pt-1 pb-10', className)}>
+    <div className={'flex items-center justify-between pt-1 pb-10'}>
       <button
         type="button"
-        onClick={onClear}
-        disabled={!canClear}
+        onClick={clear.onClick}
+        disabled={!clear.enabled || submit.loading}
         className="btn-ghost"
       >
         Reset draft
@@ -32,9 +26,9 @@ export function PasteActions({
 
       <div className="flex items-center gap-3">
         <LoadingButton
-          onSubmit={onSubmit}
-          canSubmit={canSubmit}
-          submitting={submitting}
+          onClick={submit.onClick}
+          disabled={!submit.enabled}
+          loading={submit.loading}
         />
       </div>
     </div>

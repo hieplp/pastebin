@@ -1,47 +1,54 @@
 import type { ReactNode } from 'react'
-import { cn } from '@/lib/utils'
-import { Navbar, type NavbarProps } from './Navbar'
+import { cn } from '@/utils'
+import { Alert } from '@/components/ui'
+import { useAlertStore } from '@/stores'
+import { Navbar, type NavbarProps } from './Navbar.tsx'
 
-export interface AppLayoutProps {
+interface AppLayoutProps {
   children: ReactNode
-  /** Custom navbar node. Pass `null` to hide the navbar completely */
-  navbar?: ReactNode
-  /** Props passed to default Navbar when `navbar` is not explicitly provided */
   navbarProps?: NavbarProps
-  /** Max-width constraint for main content area. Defaults to "max-w-5xl" */
-  maxWidth?: string
-  /** Additional classes for <main> wrapper */
-  mainClassName?: string
-  /** Additional classes for root page container */
-  className?: string
-  /** Optional page footer content */
   footer?: ReactNode
+  className?: string
+  mainClassName?: string
 }
 
-// ponytail: application shell with theme-aware ambient glow, top navbar, and centered main workspace
 export function AppLayout({
   children,
-  navbar,
   navbarProps,
-  maxWidth = 'max-w-5xl',
-  mainClassName,
+  footer = true,
   className,
-  footer,
+  mainClassName,
 }: AppLayoutProps) {
+  const { message, type, dismissAlert } = useAlertStore()
+
   return (
     <div
-      className={cn('min-h-screen bg-zinc-50 text-zinc-900 dark:bg-[#09090b] dark:text-zinc-100 flex flex-col antialiased selection:bg-primary-500/25 selection:text-primary-800 dark:selection:text-primary-200 transition-colors', className)}
+      className={cn(
+        'min-h-screen bg-zinc-50 text-zinc-900 dark:bg-[#09090b] dark:text-zinc-100 flex flex-col antialiased selection:bg-primary-500/25 selection:text-primary-800 dark:selection:text-primary-200 transition-colors',
+        className,
+      )}
     >
       {/* Ambient radial glow: light & dark mode calibration */}
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,color-mix(in_srgb,var(--color-primary-500)_12%,transparent),transparent)] dark:bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,color-mix(in_srgb,var(--color-primary-500)_8%,transparent),transparent)]" />
 
       {/* Top Navbar */}
-      {navbar !== undefined ? navbar : <Navbar {...navbarProps} />}
+      <Navbar {...navbarProps} />
 
       {/* Main Content Workspace */}
       <main
-        className={cn('relative z-10 flex-1 w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-4', maxWidth, mainClassName)}
+        className={cn(
+          'relative z-10 flex-1 w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-4',
+          mainClassName,
+        )}
       >
+        {/* Alert */}
+        <Alert
+          message={message ?? undefined}
+          variant={type}
+          onDismiss={dismissAlert}
+        />
+
+        {/* Children */}
         {children}
       </main>
 

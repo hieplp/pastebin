@@ -1,12 +1,12 @@
-import { cn } from '../../lib/utils'
-import { useTheme } from '../../store'
+import { cn } from '@/utils'
+import { useTheme } from '@/stores'
 import { SunIcon, MoonIcon } from '../icons'
 
 export interface ThemeToggleProps {
   className?: string
 }
 
-// ponytail: single-click toggle between light and dark with accessible aria label
+// single-click toggle between light and dark with accessible aria label
 export function ThemeToggle({ className = '' }: ThemeToggleProps) {
   const { resolvedTheme, toggleTheme } = useTheme()
   const isDark = resolvedTheme === 'dark'
@@ -17,7 +17,7 @@ export function ThemeToggle({ className = '' }: ThemeToggleProps) {
       onClick={toggleTheme}
       className={cn(
         'inline-flex items-center justify-center p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/80 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50',
-        className
+        className,
       )}
       aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       title={`Switch to ${isDark ? 'light' : 'dark'} mode`}

@@ -1,6 +1,6 @@
-import { cn } from '../../lib/utils'
 import type { ReactNode } from 'react'
-import { CheckIcon, CloseIcon } from '../icons'
+import { cn } from '@/utils'
+import { CheckIcon, CloseIcon } from '@/components/icons'
 
 export type AlertVariant = 'success' | 'error' | 'warning' | 'info'
 
@@ -15,7 +15,12 @@ export interface AlertProps {
 
 const VARIANT_CONFIG: Record<
   AlertVariant,
-  { container: string; iconColor: string; dismiss: string; icon: typeof CheckIcon }
+  {
+    container: string
+    iconColor: string
+    dismiss: string
+    icon: typeof CheckIcon
+  }
 > = {
   success: {
     container:
@@ -72,7 +77,7 @@ export function Alert({
       className={cn(
         'p-3.5 rounded-xl border text-sm flex items-center justify-between shadow-lg backdrop-blur',
         config.container,
-        className
+        className,
       )}
     >
       <div className="flex items-center gap-2.5">
@@ -83,7 +88,10 @@ export function Alert({
         <button
           type="button"
           onClick={onDismiss}
-          className={cn('text-xs font-medium cursor-pointer ml-4', config.dismiss)}
+          className={cn(
+            'text-xs font-medium cursor-pointer ml-4',
+            config.dismiss,
+          )}
         >
           Dismiss
         </button>

@@ -1,32 +1,18 @@
-import { useState, useEffect, useCallback } from 'react'
-import { cn } from '@/lib/utils'
+import type { UploadedFile } from '@/types'
 import { CloseIcon } from '@/components/icons'
+import { useCallback, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { PreviewModal } from '@/components/ui'
 
-export interface UploadedFile {
-  name: string
-  size: number
-  content?: string
-}
+/* ---- FileBadge ---- */
 
-export interface UploadedFilesProps {
-  files: UploadedFile[]
-  onClear: () => void
-  onRemove?: (index: number) => void
-  onSelectFile?: (file: UploadedFile) => void
-  className?: string
-}
-
-/* ---- Inner components ---- */
-
-function FileBadge({
-  file,
-  onPreview,
-  onRemove,
-}: {
+interface FileBadgeProps {
   file: UploadedFile
   onPreview: () => void
-  onRemove?: () => void
-}) {
+  onRemove: () => void
+}
+
+function FileBadge({ file, onPreview, onRemove }: FileBadgeProps) {
   return (
     <span className="badge-secondary">
       <button
@@ -37,7 +23,9 @@ function FileBadge({
       >
         {file.name}
       </button>
-      <span className="text-zinc-500">({(file.size / 1024).toFixed(1)} KB)</span>
+      <span className="text-zinc-500">
+        ({(file.size / 1024).toFixed(1)} KB)
+      </span>
       {onRemove && (
         <button
           type="button"
@@ -52,106 +40,53 @@ function FileBadge({
   )
 }
 
-function PreviewModal({
-  file,
-  onSelect,
-  onClose,
-}: {
-  file: UploadedFile
+/* ---- UploadedFiles ---- */
+
+interface UploadedFilesProps {
+  files: UploadedFile[]
+  onClear: () => void
+  onRemove: (index: number) => void
   onSelect?: (file: UploadedFile) => void
-  onClose: () => void
-}) {
-  useEffect(() => {
-    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/60">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="font-semibold text-sm truncate text-zinc-900 dark:text-zinc-100">
-              {file.name}
-            </span>
-            <span className="text-xs text-zinc-500 font-mono">
-              ({(file.size / 1024).toFixed(1)} KB)
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            {onSelect && file.content !== undefined && (
-              <button
-                type="button"
-                onClick={() => {
-                  onSelect(file)
-                  onClose()
-                }}
-                className="btn-secondary text-xs py-1 px-2.5"
-              >
-                Load into editor
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close preview"
-              className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 p-1 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer"
-            >
-              <CloseIcon className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-        <div className="p-4 overflow-auto flex-1 bg-zinc-950 text-zinc-100 font-mono text-xs leading-6 selection:bg-primary-500/30">
-          <pre className="whitespace-pre-wrap wrap-break-word">{file.content || '(Empty file)'}</pre>
-        </div>
-      </div>
-    </div>
-  )
 }
-
-/* ---- Main component ---- */
 
 export function UploadedFiles({
   files,
   onClear,
   onRemove,
-  onSelectFile,
-  className,
+  onSelect,
 }: UploadedFilesProps) {
+  /* ---- Hooks ---- */
   const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null)
 
-  const closePreview = useCallback(() => setPreviewFile(null), [])
-
+  /* ---- Functions ---- */
   const handleRemove = useCallback(
     (idx: number) => {
       if (previewFile === files[idx]) setPreviewFile(null)
-      onRemove?.(idx)
+      onRemove(idx)
     },
-    [previewFile, files, onRemove],
+    [previewFile, files],
   )
 
-  if (files.length === 0) return null
+  if (files.length === 0) {
+    return null
+  }
+
   return (
     <>
       <div
-        className={cn('border-b border-zinc-200 dark:border-zinc-800/60 bg-zinc-100/70 dark:bg-zinc-950/40 px-4 py-2 flex flex-wrap items-center gap-2 text-xs', className)}
+        className={
+          'border-b border-zinc-200 dark:border-zinc-800/60 bg-zinc-100/70 dark:bg-zinc-950/40 px-4 py-2 flex flex-wrap items-center gap-2 text-xs'
+        }
       >
-        <span className="text-zinc-500 text-[11px] uppercase tracking-wider font-semibold">Loaded files:</span>
+        <span className="text-zinc-500 text-[11px] uppercase tracking-wider font-semibold">
+          Loaded files:
+        </span>
         {files.map((file, idx) => (
           <FileBadge
             key={`${file.name}-${idx}`}
             file={file}
             onPreview={() => setPreviewFile(file)}
-            onRemove={onRemove ? () => handleRemove(idx) : undefined}
+            onRemove={() => handleRemove(idx)}
           />
         ))}
         <button
@@ -163,9 +98,15 @@ export function UploadedFiles({
         </button>
       </div>
 
-      {previewFile && (
-        <PreviewModal file={previewFile} onSelect={onSelectFile} onClose={closePreview} />
-      )}
+      {previewFile &&
+        createPortal(
+          <PreviewModal
+            file={previewFile}
+            onSelect={onSelect}
+            onClose={() => setPreviewFile(null)}
+          />,
+          document.body,
+        )}
     </>
   )
 }

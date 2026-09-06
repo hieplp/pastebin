@@ -1,10 +1,10 @@
 import { useEffect, type RefObject } from 'react'
 
-// ponytail: dismiss popovers/dropdowns on outside click with touch support
+// dismiss popovers/dropdowns on outside click with touch support
 export function useClickOutside<T extends HTMLElement = HTMLElement>(
   ref: RefObject<T | null>,
   handler: (event: MouseEvent | TouchEvent) => void,
-  enabled = true
+  enabled = true,
 ) {
   useEffect(() => {
     if (!enabled) return

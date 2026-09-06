@@ -41,7 +41,14 @@ export function useLocation(): LocationState & { navigate: typeof navigate } {
 
     // Intercept internal <a> clicks for SPA navigation
     const handleLinkClick = (e: MouseEvent) => {
-      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+      if (
+        e.defaultPrevented ||
+        e.button !== 0 ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.shiftKey ||
+        e.altKey
+      ) {
         return
       }
 

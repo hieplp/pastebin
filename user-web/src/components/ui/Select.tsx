@@ -1,12 +1,8 @@
-import { cn } from '../../lib/utils'
+import { cn } from '@/utils'
 import { useState, useRef, type ReactNode } from 'react'
-import { useClickOutside, useShortcut } from '../../hooks'
-import { ChevronDownIcon, CheckIcon } from '../icons'
-
-export interface SelectOption {
-  value: string
-  label: string
-}
+import { useClickOutside, useShortcut } from '@/hooks'
+import { ChevronDownIcon, CheckIcon } from '@/components/icons'
+import type { SelectOption } from '@/types'
 
 export interface SelectProps {
   value?: string
@@ -17,7 +13,7 @@ export interface SelectProps {
   children?: ReactNode
 }
 
-// ponytail: custom dark-theme dropdown with zero extra dependencies; click-outside & escape support
+// custom dark-theme dropdown with zero extra dependencies; click-outside & escape support
 export function Select({
   value,
   onChange,
@@ -41,7 +37,7 @@ export function Select({
           onChange={(e) => onChange?.(e)}
           className={cn(
             'appearance-none bg-white/80 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 rounded-lg pl-3 pr-8 py-1.5 text-xs text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600 cursor-pointer transition',
-            className
+            className,
           )}
         >
           {children}
@@ -62,15 +58,17 @@ export function Select({
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         className={cn(
-          'inline-flex items-center justify-between gap-2.5 bg-white/80 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-900/60 rounded-lg px-3 py-1.5 text-xs text-zinc-800 dark:text-zinc-200 transition cursor-pointer focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600',
-          className
+          'inline-flex items-center justify-between gap-2.5 bg-white/80 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-900/60 rounded-lg px-3 py-1.5 text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 transition cursor-pointer focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600',
+          className,
         )}
       >
-        <span className="truncate font-medium">{selectedOption?.label ?? placeholder}</span>
+        <span className="truncate font-medium">
+          {selectedOption?.label ?? placeholder}
+        </span>
         <ChevronDownIcon
           className={cn(
             'h-3 w-3 text-zinc-400 transition-transform duration-150 shrink-0',
-            isOpen && 'rotate-180 text-primary'
+            isOpen && 'rotate-180 text-primary',
           )}
         />
       </button>
@@ -92,12 +90,15 @@ export function Select({
                   'w-full flex items-center justify-between gap-3 px-2.5 py-1.5 rounded-lg text-xs transition cursor-pointer text-left',
                   isSelected
                     ? 'bg-primary/15 text-primary font-medium'
-                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100'
+                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100',
                 )}
               >
                 <span className="truncate">{opt.label}</span>
                 {isSelected && (
-                  <CheckIcon className="h-3.5 w-3.5 text-primary shrink-0" strokeWidth={2.5} />
+                  <CheckIcon
+                    className="h-3.5 w-3.5 text-primary shrink-0"
+                    strokeWidth={2.5}
+                  />
                 )}
               </button>
             )

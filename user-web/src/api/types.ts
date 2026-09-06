@@ -1,3 +1,5 @@
+import type { UploadedFile } from '@/types'
+
 export interface CreatePasteDto {
   title: string
   content: string
@@ -16,6 +18,7 @@ export interface PasteItem {
   privacy?: string
   createdAt?: string
   expiredAt?: string
+  files?: UploadedFile[]
 }
 
 export interface ApiResponse<T = unknown> {

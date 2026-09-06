@@ -1,3 +1,3 @@
-export * from './types'
-export * from './client'
-export * from './pastes'
+export * from './types.ts'
+export * from './client.ts'
+export * from './pastes.ts'

@@ -48,7 +48,9 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   return copyFallback(text)
 }
 
-export function useClipboard({ timeout = 2000 }: UseClipboardOptions = {}): UseClipboardReturn {
+export function useClipboard({
+  timeout = 2000,
+}: UseClipboardOptions = {}): UseClipboardReturn {
   const [copied, setCopied] = useState(false)
   const timerRef = useRef<number | null>(null)
 
@@ -70,7 +72,7 @@ export function useClipboard({ timeout = 2000 }: UseClipboardOptions = {}): UseC
       setCopied(false)
       return false
     },
-    [timeout]
+    [timeout],
   )
 
   useEffect(() => {

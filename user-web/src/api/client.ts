@@ -29,7 +29,9 @@ export const api = ky.create({
         if (response.ok && response.status !== 204) {
           const json: unknown = await response.json()
           const unwrapped =
-            json && typeof json === 'object' && 'data' in json ? (json as Record<string, unknown>).data : json
+            json && typeof json === 'object' && 'data' in json
+              ? (json as Record<string, unknown>).data
+              : json
           return new Response(JSON.stringify(unwrapped), response)
         }
       },
@@ -39,7 +41,10 @@ export const api = ky.create({
         if (error instanceof HTTPError) {
           const data = error.data
           const message =
-            data && typeof data === 'object' && 'message' in data && typeof data.message === 'string'
+            data &&
+            typeof data === 'object' &&
+            'message' in data &&
+            typeof data.message === 'string'
               ? data.message
               : error.message
           return new ApiError(message, error.response.status, data)
@@ -50,7 +55,10 @@ export const api = ky.create({
   },
 })
 
-export async function request<T>(path: string, options: Options = {}): Promise<T> {
+export async function request<T>(
+  path: string,
+  options: Options = {},
+): Promise<T> {
   const cleanPath = path.startsWith('/') ? path.slice(1) : path
   const response = await api(cleanPath, options)
   if (response.status === 204) {

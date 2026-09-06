@@ -1,0 +1,6 @@
+export * from './DetailContainer.tsx'
+export * from './DetailToolbar.tsx'
+export * from './DetailCodeArea.tsx'
+export * from './DetailActions.tsx'
+export * from './DetailFiles.tsx'
+export * from './DetailNotFound.tsx'

@@ -1,137 +1,135 @@
-import { AppLayout } from '../../components/layout'
-import { Alert } from '../../components/ui'
+import { useRef } from 'react'
+import { AppLayout } from '@/components/layout'
 import {
-  PasteToolbar,
-  UploadedFiles,
-  EditorStatusBar,
+  EditorArea,
+  EditorContainer,
+  EditorToolbar,
   PasteActions,
-  DragOverlay,
-} from './components'
-import { usePasteForm } from './hooks'
-import type { PasteItem } from '../../api/types'
-import { navigate } from '../../lib/router'
+  UploadedFiles,
+} from '@/pages/CreatePastePage/components'
+import { useFileUpload } from '@/hooks'
+import { getFileExtension } from '@/utils'
+import { EXTENSION_MAP } from '@/constants.ts'
+import { usePasteStore, useAlertStore } from '@/stores'
+import { navigate } from '@/lib/router'
+import type { UploadedFile } from '@/types'
 
-export interface CreatePastePageProps {
-  onSuccess?: (paste: PasteItem) => void
-}
+export function CreatePastePage() {
+  /* ---- Hooks ---- */
+  const { draft, setDraft, clearDraft, createPaste, isLoading } =
+    usePasteStore()
+  const { showSuccessAlert, showErrorAlert } = useAlertStore()
+  const { files, readFiles, clearFiles, removeFile } = useFileUpload()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-export function CreatePastePage({ onSuccess }: CreatePastePageProps = {}) {
-  const handleSuccess = (paste: PasteItem) => {
-    if (onSuccess) {
-      onSuccess(paste)
-    } else {
-      const identifier = paste.alias || paste.pasteId
-      navigate(`/pastes/${identifier}?created=true`)
+  /* ---- States ---- */
+  const canClear = Boolean(draft.content || draft.title || files.length > 0)
+  const canSubmit =
+    Boolean(draft.content.trim() || files.length > 0) && !isLoading
+
+  /* ---- Functions ---- */
+  function onClear() {
+    clearDraft()
+    clearFiles()
+  }
+
+  async function onSubmit() {
+    if (isLoading) return
+
+    const draftText = draft.content.trim()
+    const filesText =
+      files.length === 1 && !draftText
+        ? (files[0].content ?? '')
+        : files
+            .map((f) => `// --- ${f.name} ---\n${f.content ?? ''}`)
+            .join('\n\n')
+
+    const content = [draftText, filesText].filter(Boolean).join('\n\n')
+    if (!content.trim()) return
+
+    try {
+      const created = await createPaste({ ...draft, content })
+      onClear()
+      showSuccessAlert(
+        `Paste "${draft.title || 'Untitled'}" created successfully!`,
+      )
+      navigate(`/pastes/${created.alias || created.pasteId}`)
+    } catch (err) {
+      showErrorAlert(
+        err instanceof Error ? err.message : 'Failed to create paste',
+      )
     }
   }
 
-  const {
-    form,
-    files,
-    isDragging,
-    isSubmitting,
-    message,
-    messageType,
-    canClear,
-    canSubmit,
-    fileInputRef,
-    dragProps,
-    handleKeyDown,
-    handleTitleChange,
-    handleContentChange,
-    handleSyntaxChange,
-    handleExpirationChange,
-    handleUploadClick,
-    handleFileInputChange,
-    handleRemoveFile,
-    handleSelectFile,
-    handleClearFiles,
-    handleClear,
-    handleSubmit,
-    setMessage,
-  } = usePasteForm({ onSuccess: handleSuccess })
+  function onSelectFile(file: UploadedFile) {
+    if (file.content === undefined) return
+    const ext = getFileExtension(file.name)
+    setDraft((prev) => ({
+      ...prev,
+      title: file.name,
+      content: file.content ?? '',
+      syntax: EXTENSION_MAP[ext] || prev.syntax,
+    }))
+  }
 
+  /* ---- Render ---- */
   return (
-    <AppLayout
-      navbarProps={{
-        badge: 'new paste',
-        actions: (
-          <span className="text-xs text-zinc-500 font-mono">
-            press <kbd className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300">⌘</kbd> + <kbd className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300">Enter</kbd> to save
-          </span>
-        ),
-      }}
-    >
-      {/* Banner Alert */}
-      <Alert
-        message={message ?? undefined}
-        variant={messageType}
-        onDismiss={() => setMessage(null)}
-      />
-
-      {/* Hidden Native File Input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        className="hidden"
-        onChange={handleFileInputChange}
-      />
-
+    <AppLayout>
       {/* Editor Container */}
-      <div
-        {...dragProps}
-        className={`group relative flex-1 flex flex-col rounded-2xl border transition-all duration-200 shadow-2xl shadow-black/40 overflow-hidden ${
-          isDragging
-            ? 'border-primary-500 bg-primary-950/20 ring-4 ring-primary-500/20'
-            : 'border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/40 hover:border-zinc-300 dark:hover:border-zinc-700/80 backdrop-blur-xl shadow-xl dark:shadow-2xl shadow-zinc-950/5 dark:shadow-black/40'
-        }`}
+      <EditorContainer
+        draft={draft}
+        onDropFiles={(files) => void readFiles(files)}
       >
-        {/* Drag Overlay Indicator */}
-        <DragOverlay visible={isDragging} />
-
-        {/* Integrated Toolbar */}
-        <PasteToolbar
-          title={form.title}
-          syntax={form.syntax}
-          expiration={form.expiration}
-          onTitleChange={handleTitleChange}
-          onSyntaxChange={handleSyntaxChange}
-          onExpirationChange={handleExpirationChange}
-          onUploadClick={handleUploadClick}
+        {/* Editor Toolbar */}
+        <EditorToolbar
+          title={draft.title}
+          syntax={draft.syntax}
+          expiration={draft.expiration}
+          onChange={(field, value: object) => {
+            setDraft((prev) => ({ ...prev, [field]: value }))
+          }}
+          onUploadClick={() => {
+            fileInputRef.current?.click()
+          }}
         />
 
         {/* Attached Files Bar */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          className="hidden"
+          onChange={(e) => {
+            void readFiles(e.target.files)
+            if (e.target) e.target.value = ''
+          }}
+        />
         <UploadedFiles
           files={files}
-          onClear={handleClearFiles}
-          onRemove={handleRemoveFile}
-          onSelectFile={handleSelectFile}
+          onClear={clearFiles}
+          onRemove={removeFile}
+          onSelect={onSelectFile}
         />
 
         {/* Editor Area */}
-        <div className="relative flex-1 flex flex-col">
-          <textarea
-            value={form.content}
-            onChange={(e) => handleContentChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Paste or write your text or code here... (or drag & drop files)"
-            spellCheck={false}
-            className="flex-1 w-full p-4 sm:p-5 bg-transparent resize-y min-h-105 font-mono text-[13px] leading-6 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-650 focus:outline-none selection:bg-primary-500/20"
-          />
-        </div>
-
-        {/* Editor Status Footer */}
-        <EditorStatusBar content={form.content} syntax={form.syntax} />
-      </div>
+        <EditorArea
+          draft={draft}
+          setDraft={setDraft}
+          onSubmit={() => void onSubmit()}
+        />
+      </EditorContainer>
 
       {/* Bottom Actions */}
       <PasteActions
-        canClear={canClear}
-        canSubmit={canSubmit}
-        submitting={isSubmitting}
-        onClear={handleClear}
-        onSubmit={handleSubmit}
+        clear={{
+          onClick: onClear,
+          enabled: canClear,
+        }}
+        submit={{
+          onClick: () => void onSubmit(),
+          enabled: canSubmit,
+          loading: isLoading,
+        }}
       />
     </AppLayout>
   )

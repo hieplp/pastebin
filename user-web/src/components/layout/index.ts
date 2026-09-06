@@ -1,3 +1,2 @@
-export * from './Navbar'
-export * from './AppLayout'
-export * from './AuthLayout'
+export * from './AppLayout.tsx'
+export * from './Navbar.tsx'

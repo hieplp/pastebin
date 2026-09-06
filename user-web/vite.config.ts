@@ -23,7 +23,8 @@ function mockApiPlugin(): Plugin {
     {
       pasteId: 'demo-welcome',
       title: 'Welcome to Pastebin',
-      content: '// Welcome to Pastebin!\n// Paste, share, and manage code snippets securely.\nconsole.log("Hello, world!");',
+      content:
+        '// Welcome to Pastebin!\n// Paste, share, and manage code snippets securely.\nconsole.log("Hello, world!");',
       syntax: 'javascript',
       privacy: 'public',
       createdAt: new Date(Date.now() - 3600000).toISOString(),
@@ -31,7 +32,8 @@ function mockApiPlugin(): Plugin {
     {
       pasteId: 'demo-quicksort',
       title: 'Quick Sort in TypeScript',
-      content: 'function quickSort(arr: number[]): number[] {\n  if (arr.length <= 1) return arr;\n  const pivot = arr[arr.length - 1];\n  const left = arr.filter((x, i) => x <= pivot && i < arr.length - 1);\n  const right = arr.filter(x => x > pivot);\n  return [...quickSort(left), pivot, ...quickSort(right)];\n}',
+      content:
+        'function quickSort(arr: number[]): number[] {\n  if (arr.length <= 1) return arr;\n  const pivot = arr[arr.length - 1];\n  const left = arr.filter((x, i) => x <= pivot && i < arr.length - 1);\n  const right = arr.filter(x => x > pivot);\n  return [...quickSort(left), pivot, ...quickSort(right)];\n}',
       syntax: 'typescript',
       privacy: 'public',
       createdAt: new Date(Date.now() - 7200000).toISOString(),
@@ -53,12 +55,19 @@ function mockApiPlugin(): Plugin {
     res.statusCode = status
     res.setHeader('Content-Type', 'application/json; charset=utf-8')
     res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET, POST, PATCH, DELETE, OPTIONS',
+    )
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     res.end(JSON.stringify(body))
   }
 
-  const middleware = async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+  const middleware = async (
+    req: IncomingMessage,
+    res: ServerResponse,
+    next: () => void,
+  ) => {
     const rawUrl = req.url || ''
     if (!rawUrl.startsWith('/api')) {
       return next()
@@ -67,8 +76,14 @@ function mockApiPlugin(): Plugin {
     if (req.method === 'OPTIONS') {
       res.statusCode = 204
       res.setHeader('Access-Control-Allow-Origin', '*')
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+      res.setHeader(
+        'Access-Control-Allow-Methods',
+        'GET, POST, PATCH, DELETE, OPTIONS',
+      )
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Content-Type, Authorization',
+      )
       res.end()
       return
     }
@@ -82,8 +97,16 @@ function mockApiPlugin(): Plugin {
         const raw = await readBody(req)
         const dto = raw ? JSON.parse(raw) : {}
 
-        if (!dto.content || typeof dto.content !== 'string' || !dto.content.trim()) {
-          sendJson(res, 400, { code: 400, message: 'Content is required', data: null })
+        if (
+          !dto.content ||
+          typeof dto.content !== 'string' ||
+          !dto.content.trim()
+        ) {
+          sendJson(res, 400, {
+            code: 400,
+            message: 'Content is required',
+            data: null,
+          })
           return
         }
 
@@ -106,8 +129,14 @@ function mockApiPlugin(): Plugin {
 
       // GET /api/pastes/own - List user pastes
       if (req.method === 'GET' && pathname === '/api/pastes/own') {
-        const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10))
-        const size = Math.max(1, parseInt(url.searchParams.get('size') || '10', 10))
+        const page = Math.max(
+          1,
+          parseInt(url.searchParams.get('page') || '1', 10),
+        )
+        const size = Math.max(
+          1,
+          parseInt(url.searchParams.get('size') || '10', 10),
+        )
         const start = (page - 1) * size
         const items = pastes.slice(start, start + size)
 
@@ -129,7 +158,11 @@ function mockApiPlugin(): Plugin {
         const id = decodeURIComponent(pathname.slice('/api/pastes/'.length))
         const item = pastes.find((p) => p.pasteId === id || p.alias === id)
         if (!item) {
-          sendJson(res, 404, { code: 404, message: 'Paste not found', data: null })
+          sendJson(res, 404, {
+            code: 404,
+            message: 'Paste not found',
+            data: null,
+          })
           return
         }
         sendJson(res, 200, { code: 200, message: 'success', data: item })
@@ -139,24 +172,40 @@ function mockApiPlugin(): Plugin {
       // PATCH /api/pastes/:id - Update paste
       if (req.method === 'PATCH' && pathname.startsWith('/api/pastes/')) {
         const id = decodeURIComponent(pathname.slice('/api/pastes/'.length))
-        const index = pastes.findIndex((p) => p.pasteId === id || p.alias === id)
+        const index = pastes.findIndex(
+          (p) => p.pasteId === id || p.alias === id,
+        )
         if (index === -1) {
-          sendJson(res, 404, { code: 404, message: 'Paste not found', data: null })
+          sendJson(res, 404, {
+            code: 404,
+            message: 'Paste not found',
+            data: null,
+          })
           return
         }
         const raw = await readBody(req)
         const patch = raw ? JSON.parse(raw) : {}
         pastes[index] = { ...pastes[index], ...patch }
-        sendJson(res, 200, { code: 200, message: 'success', data: pastes[index] })
+        sendJson(res, 200, {
+          code: 200,
+          message: 'success',
+          data: pastes[index],
+        })
         return
       }
 
       // DELETE /api/pastes/:id - Delete paste
       if (req.method === 'DELETE' && pathname.startsWith('/api/pastes/')) {
         const id = decodeURIComponent(pathname.slice('/api/pastes/'.length))
-        const index = pastes.findIndex((p) => p.pasteId === id || p.alias === id)
+        const index = pastes.findIndex(
+          (p) => p.pasteId === id || p.alias === id,
+        )
         if (index === -1) {
-          sendJson(res, 404, { code: 404, message: 'Paste not found', data: null })
+          sendJson(res, 404, {
+            code: 404,
+            message: 'Paste not found',
+            data: null,
+          })
           return
         }
         pastes.splice(index, 1)
@@ -164,7 +213,11 @@ function mockApiPlugin(): Plugin {
         return
       }
 
-      sendJson(res, 404, { code: 404, message: `Mock API route not found: ${req.method} ${pathname}`, data: null })
+      sendJson(res, 404, {
+        code: 404,
+        message: `Mock API route not found: ${req.method} ${pathname}`,
+        data: null,
+      })
     } catch (err) {
       sendJson(res, 500, {
         code: 500,
