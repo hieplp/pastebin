@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: pastebin-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pastebin
+    username: pastebin
+    password: pastebin
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
