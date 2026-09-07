@@ -1,4 +1,4 @@
-package dev.hieplp.pastebin.adapter.out.file;
+package dev.hieplp.pastebin.application.port.out.file;
 
 import dev.hieplp.pastebin.domain.model.PasteFile;
 

@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @Entity
@@ -20,6 +22,9 @@ public class PasteEntity extends AuditableEntity {
     @Column(nullable = false)
     private String title;
 
+    @Column(unique = true, length = 50)
+    private String alias;
+
     @Column(nullable = false, columnDefinition = "text")
     private String content;
 
@@ -30,6 +35,12 @@ public class PasteEntity extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Syntax syntax;
+
+    @Column(name = "expired_at")
+    private Instant expiredAt;
+
+    @Column(name = "burn_after_read", nullable = false)
+    private boolean burnAfterRead;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

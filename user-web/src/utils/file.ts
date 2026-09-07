@@ -15,6 +15,7 @@ export async function readFilesToUpload(
 
   const results = await Promise.all(
     Array.from(fileList).map(async (f) => ({
+      file: f,
       name: f.name,
       size: f.size,
       text: await f.text(),
@@ -25,7 +26,14 @@ export async function readFilesToUpload(
     const file = results[0]
     const ext = getFileExtension(file.name)
     return {
-      files: [{ name: file.name, size: file.size, content: file.text }],
+      files: [
+        {
+          name: file.name,
+          size: file.size,
+          content: file.text,
+          file: file.file,
+        },
+      ],
       title: file.name,
       content: file.text,
       syntax: EXTENSION_MAP[ext] || 'plaintext',
@@ -40,6 +48,7 @@ export async function readFilesToUpload(
       name: r.name,
       size: r.size,
       content: r.text,
+      file: r.file,
     })),
     title: `Upload: ${results.length} files`,
     content: combined,

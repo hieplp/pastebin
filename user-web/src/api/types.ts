@@ -1,11 +1,7 @@
 import type { UploadedFile } from '@/types'
 
-export interface CreatePasteDto {
-  title: string
-  content: string
-  syntax?: string
-  privacy?: 'public' | 'unlisted' | 'private' | string
-  expiredAt?: string
+export interface CreatePasteResponse {
+  pasteId: string
   alias?: string
 }
 

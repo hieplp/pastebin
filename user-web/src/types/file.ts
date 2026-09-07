@@ -1,7 +1,9 @@
 export interface UploadedFile {
+  fileId?: string
   name: string
   size: number
   content?: string
+  file?: File
 }
 
 export interface ProcessedUpload {

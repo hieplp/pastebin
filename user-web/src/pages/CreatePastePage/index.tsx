@@ -33,22 +33,45 @@ export function CreatePastePage() {
     clearFiles()
   }
 
+  function computeExpiration(expiration: string) {
+    if (expiration === 'burn') {
+      return { burnAfterRead: true, expiredAt: undefined }
+    }
+    const durations: Record<string, number> = {
+      '10m': 10 * 60 * 1000,
+      '1h': 60 * 60 * 1000,
+      '1d': 24 * 60 * 60 * 1000,
+      '1w': 7 * 24 * 60 * 60 * 1000,
+    }
+    const duration = durations[expiration]
+    if (duration) {
+      return {
+        expiredAt: new Date(Date.now() + duration).toISOString(),
+        burnAfterRead: false,
+      }
+    }
+    return { burnAfterRead: false, expiredAt: undefined }
+  }
+
   async function onSubmit() {
     if (isLoading) return
 
-    const draftText = draft.content.trim()
-    const filesText =
-      files.length === 1 && !draftText
-        ? (files[0].content ?? '')
-        : files
-            .map((f) => `// --- ${f.name} ---\n${f.content ?? ''}`)
-            .join('\n\n')
+    // ponytail: files travel as separate attachments; content is editor text only
+    const content = draft.content.trim()
+    if (!content && files.length === 0) return
 
-    const content = [draftText, filesText].filter(Boolean).join('\n\n')
-    if (!content.trim()) return
+    const { expiredAt, burnAfterRead } = computeExpiration(draft.expiration)
 
     try {
-      const created = await createPaste({ ...draft, content })
+      const created = await createPaste(
+        {
+          ...draft,
+          content,
+          expiredAt,
+          burnAfterRead,
+        },
+        files.flatMap((f) => (f.file ? [f.file] : [])),
+      )
       onClear()
       showSuccessAlert(
         `Paste "${draft.title || 'Untitled'}" created successfully!`,
