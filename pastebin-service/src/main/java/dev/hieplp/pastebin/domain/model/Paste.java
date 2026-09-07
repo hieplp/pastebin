@@ -27,8 +27,9 @@ public class Paste extends Auditable {
             Actor actor
     ) {
         var paste = new Paste();
+        var pasteId = PasteId.uuid();
 
-        paste.setPasteId(PasteId.uuid());
+        paste.setPasteId(pasteId);
         paste.setTitle(title);
         paste.setContent(content);
         paste.setPrivacy(privacy);

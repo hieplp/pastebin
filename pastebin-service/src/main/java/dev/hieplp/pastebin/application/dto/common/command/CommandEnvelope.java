@@ -18,4 +18,8 @@ public record CommandEnvelope<C>(
         return of(command, Actor.anonymous());
     }
 
+    public <N> CommandEnvelope<N> withCommand(N newCommand) {
+        return of(newCommand, actor);
+    }
+
 }

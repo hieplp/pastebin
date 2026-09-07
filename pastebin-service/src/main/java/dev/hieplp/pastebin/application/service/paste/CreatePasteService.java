@@ -1,8 +1,10 @@
 package dev.hieplp.pastebin.application.service.paste;
 
 import dev.hieplp.pastebin.application.dto.common.command.CommandEnvelope;
+import dev.hieplp.pastebin.application.dto.file.command.CreateFilesCommand;
 import dev.hieplp.pastebin.application.dto.paste.command.CreatePasteCommand;
 import dev.hieplp.pastebin.application.dto.paste.result.CreatePasteResult;
+import dev.hieplp.pastebin.application.port.in.file.CreateFilesUseCase;
 import dev.hieplp.pastebin.application.port.in.paste.CreatePasteUseCase;
 import dev.hieplp.pastebin.application.port.out.paste.SavePastePort;
 import dev.hieplp.pastebin.domain.model.Paste;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class CreatePasteService implements CreatePasteUseCase {
 
     private final SavePastePort savePastePort;
+    private final CreateFilesUseCase createFilesUseCase;
 
     @Transactional
     @Override
@@ -33,6 +36,12 @@ public class CreatePasteService implements CreatePasteUseCase {
                 actor
         ));
         log.info("Paste is saved with pasteId={}", savedPaste.getPasteId());
+
+        if (command.files() != null && !command.files().isEmpty()) {
+            createFilesUseCase.create(envelope.withCommand(
+                new CreateFilesCommand(savedPaste.getPasteId(), command.files())
+            ));
+        }
 
         return toResult(savedPaste);
     }

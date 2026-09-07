@@ -5,14 +5,21 @@ import dev.hieplp.pastebin.adapter.in.web.payload.common.BaseResponse;
 import dev.hieplp.pastebin.adapter.in.web.payload.paste.CreatePasteRequest;
 import dev.hieplp.pastebin.adapter.in.web.payload.paste.CreatePasteResponse;
 import dev.hieplp.pastebin.application.dto.common.command.CommandEnvelope;
+import dev.hieplp.pastebin.application.dto.file.command.CreateFileCommand;
 import dev.hieplp.pastebin.application.port.in.paste.CreatePasteUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -24,12 +31,32 @@ public class PasteController {
 
     private final CreatePasteUseCase createPasteUseCase;
 
-    @PostMapping
-    public BaseResponse<CreatePasteResponse> create(@Valid @RequestBody CreatePasteRequest request) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse<CreatePasteResponse> create(
+            @RequestPart("request") @Valid CreatePasteRequest request,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
+    ) throws IOException {
+        var fileCommands = buildFileCommands(files);
         var result = createPasteUseCase.create(CommandEnvelope.anonymous(
-                pasteMapper.toCommand(request)
+                pasteMapper.toCommand(request, fileCommands)
         ));
         return BaseResponse.ok(pasteMapper.toResponse(result));
+    }
+
+    private List<CreateFileCommand> buildFileCommands(List<MultipartFile> files) throws IOException {
+        if (files == null) {
+            return List.of();
+        }
+        var fileCommands = new ArrayList<CreateFileCommand>(files.size());
+        for (var file : files) {
+            fileCommands.add(new CreateFileCommand(
+                    file.getOriginalFilename(),
+                    file.getContentType(),
+                    file.getSize(),
+                    file.getBytes()
+            ));
+        }
+        return fileCommands;
     }
 
 }

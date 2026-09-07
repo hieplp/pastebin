@@ -1,3 +1,5 @@
+server:
+  port: 9000
 spring:
   application:
     name: pastebin-service
@@ -9,3 +11,7 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+pastebin:
+  storage:
+    local:
+      root: uploads
