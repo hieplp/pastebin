@@ -1,7 +1,10 @@
 package dev.hieplp.pastebin.domain.model;
 
+import dev.hieplp.pastebin.domain.vo.ContentType;
 import dev.hieplp.pastebin.domain.vo.FileId;
+import dev.hieplp.pastebin.domain.vo.FileName;
 import dev.hieplp.pastebin.domain.vo.PasteId;
+import dev.hieplp.pastebin.domain.vo.StorageKey;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,16 +14,16 @@ public class PasteFile {
 
     private FileId fileId;
     private PasteId pasteId;
-    private String name;
-    private String contentType;
+    private FileName name;
+    private ContentType contentType;
     private long size;
-    private String storageKey;
+    private StorageKey storageKey;
     private byte[] content;
 
     public static PasteFile create(
             PasteId pasteId,
-            String name,
-            String contentType,
+            FileName name,
+            ContentType contentType,
             long size,
             byte[] content
     ) {
@@ -33,7 +36,7 @@ public class PasteFile {
         file.setContentType(contentType);
         file.setSize(size);
         file.setContent(content);
-        file.setStorageKey(fileId.value());
+        file.setStorageKey(StorageKey.of(fileId.value()));
 
         return file;
     }

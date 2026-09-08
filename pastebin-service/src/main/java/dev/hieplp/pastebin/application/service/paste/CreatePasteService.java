@@ -6,7 +6,7 @@ import dev.hieplp.pastebin.application.dto.paste.command.CreatePasteCommand;
 import dev.hieplp.pastebin.application.dto.paste.result.CreatePasteResult;
 import dev.hieplp.pastebin.application.port.in.file.CreateFilesUseCase;
 import dev.hieplp.pastebin.application.port.in.paste.CreatePasteUseCase;
-import dev.hieplp.pastebin.application.port.out.paste.GetPastePort;
+import dev.hieplp.pastebin.application.port.out.paste.ExistPastePort;
 import dev.hieplp.pastebin.application.port.out.paste.SavePastePort;
 import dev.hieplp.pastebin.domain.exception.BadRequestException;
 import dev.hieplp.pastebin.domain.model.Paste;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 public class CreatePasteService implements CreatePasteUseCase {
 
     private final SavePastePort savePastePort;
-    private final GetPastePort getPastePort;
+    private final ExistPastePort existPastePort;
 
     private final CreateFilesUseCase createFilesUseCase;
 
@@ -32,13 +32,17 @@ public class CreatePasteService implements CreatePasteUseCase {
         var actor = envelope.actor();
         log.info("Create paste with title={} by actor={}", command.title(), actor);
 
-        var content = command.content() != null ? command.content().trim() : "";
+        var content = command.content();
         var hasFiles = command.files() != null && !command.files().isEmpty();
-        if (content.isEmpty() && !hasFiles) {
+        if (content.isBlank() && !hasFiles) {
             throw new BadRequestException("Paste content or at least one file is required");
         }
 
-        var alias = validateAndGetAlias(command);
+        var alias = command.alias();
+        if (alias != null && existPastePort.existsByAlias(alias)) {
+            throw new BadRequestException("Alias '" + alias.value() + "' is already in use");
+        }
+
         var savedPaste = savePastePort.save(Paste.create(
                 command.title(),
                 alias,
@@ -51,32 +55,13 @@ public class CreatePasteService implements CreatePasteUseCase {
         ));
         log.info("Paste is saved with pasteId={}", savedPaste.getPasteId());
 
-        if (command.files() != null && !command.files().isEmpty()) {
+        if (hasFiles) {
             createFilesUseCase.create(envelope.withCommand(
                     new CreateFilesCommand(savedPaste.getPasteId(), command.files())
             ));
         }
 
-        return toResult(savedPaste);
-    }
-
-    private String validateAndGetAlias(CreatePasteCommand command) {
-        var alias = command.alias() != null && !command.alias().isBlank()
-                ? command.alias().trim()
-                : null;
-
-        if (alias != null && getPastePort.findByIdOrAlias(alias).isPresent()) {
-            throw new BadRequestException("Alias '" + alias + "' is already in use");
-        }
-
-        return alias;
-    }
-
-    private CreatePasteResult toResult(Paste paste) {
-        return new CreatePasteResult(
-                paste.getPasteId().value(),
-                paste.getAlias()
-        );
+        return CreatePasteResult.from(savedPaste);
     }
 
 }

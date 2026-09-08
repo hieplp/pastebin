@@ -4,7 +4,10 @@ import dev.hieplp.pastebin.domain.enums.PasteStatus;
 import dev.hieplp.pastebin.domain.enums.Privacy;
 import dev.hieplp.pastebin.domain.enums.Syntax;
 import dev.hieplp.pastebin.domain.vo.Actor;
+import dev.hieplp.pastebin.domain.vo.Alias;
+import dev.hieplp.pastebin.domain.vo.Content;
 import dev.hieplp.pastebin.domain.vo.PasteId;
+import dev.hieplp.pastebin.domain.vo.Title;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,9 +18,9 @@ import java.time.Instant;
 public class Paste extends Auditable {
 
     private PasteId pasteId;
-    private String title;
-    private String alias;
-    private String content;
+    private Title title;
+    private Alias alias;
+    private Content content;
     private Privacy privacy;
     private Syntax syntax;
     private Instant expiredAt;
@@ -25,9 +28,9 @@ public class Paste extends Auditable {
     private PasteStatus status;
 
     public static Paste create(
-            String title,
-            String alias,
-            String content,
+            Title title,
+            Alias alias,
+            Content content,
             Privacy privacy,
             Syntax syntax,
             Instant expiredAt,

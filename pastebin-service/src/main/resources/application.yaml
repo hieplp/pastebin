@@ -15,3 +15,5 @@ pastebin:
   storage:
     local:
       root: uploads
+  cleanup:
+    cron: "0 0 * * * *"

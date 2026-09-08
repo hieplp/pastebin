@@ -1,12 +1,12 @@
 package dev.hieplp.pastebin.adapter.in.web.controller;
 
+import dev.hieplp.pastebin.adapter.in.web.mapper.MultipartFileMapper;
 import dev.hieplp.pastebin.adapter.in.web.mapper.PasteMapper;
 import dev.hieplp.pastebin.adapter.in.web.payload.common.BaseResponse;
 import dev.hieplp.pastebin.adapter.in.web.payload.paste.CreatePasteRequest;
 import dev.hieplp.pastebin.adapter.in.web.payload.paste.CreatePasteResponse;
 import dev.hieplp.pastebin.adapter.in.web.payload.paste.GetPasteResponse;
 import dev.hieplp.pastebin.application.dto.common.command.CommandEnvelope;
-import dev.hieplp.pastebin.application.dto.file.command.CreateFileCommand;
 import dev.hieplp.pastebin.application.dto.paste.query.GetPasteQuery;
 import dev.hieplp.pastebin.application.port.in.paste.CreatePasteUseCase;
 import dev.hieplp.pastebin.application.port.in.paste.GetPasteUseCase;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -27,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PasteController {
 
+    private final MultipartFileMapper multipartFileMapper;
     private final PasteMapper pasteMapper;
 
     private final CreatePasteUseCase createPasteUseCase;
@@ -37,7 +37,7 @@ public class PasteController {
             @RequestPart("request") @Valid CreatePasteRequest request,
             @RequestPart(value = "files", required = false) List<MultipartFile> files
     ) throws IOException {
-        var fileCommands = buildFileCommands(files);
+        var fileCommands = multipartFileMapper.toCommands(files);
         var result = createPasteUseCase.create(CommandEnvelope.anonymous(
                 pasteMapper.toCommand(request, fileCommands)
         ));
@@ -48,24 +48,6 @@ public class PasteController {
     public BaseResponse<GetPasteResponse> get(@PathVariable("id") String id) {
         var result = getPasteUseCase.get(new GetPasteQuery(id));
         return BaseResponse.ok(pasteMapper.toResponse(result));
-    }
-
-    private List<CreateFileCommand> buildFileCommands(List<MultipartFile> files) throws IOException {
-        if (files == null) {
-            return List.of();
-        }
-
-        var fileCommands = new ArrayList<CreateFileCommand>(files.size());
-        for (var file : files) {
-            fileCommands.add(new CreateFileCommand(
-                    file.getOriginalFilename(),
-                    file.getContentType(),
-                    file.getSize(),
-                    file.getBytes()
-            ));
-        }
-
-        return fileCommands;
     }
 
 }

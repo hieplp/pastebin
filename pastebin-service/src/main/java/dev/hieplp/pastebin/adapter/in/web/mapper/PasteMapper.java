@@ -17,6 +17,7 @@ import java.util.List;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
+        uses = VoMapper.class,
         implementationName = "PasteWebMapperImpl"
 )
 public interface PasteMapper {

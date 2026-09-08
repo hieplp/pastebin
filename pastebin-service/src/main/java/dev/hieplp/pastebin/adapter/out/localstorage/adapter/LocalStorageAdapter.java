@@ -1,10 +1,12 @@
 package dev.hieplp.pastebin.adapter.out.localstorage.adapter;
 
 import dev.hieplp.pastebin.adapter.out.localstorage.config.LocalStorageProperties;
-import dev.hieplp.pastebin.application.port.out.file.ReadFilePort;
-import dev.hieplp.pastebin.application.port.out.file.UploadFilePort;
+import dev.hieplp.pastebin.application.port.out.storage.DeleteStoragePort;
+import dev.hieplp.pastebin.application.port.out.storage.ReadStoragePort;
+import dev.hieplp.pastebin.application.port.out.storage.UploadStoragePort;
 import dev.hieplp.pastebin.domain.exception.BadRequestException;
 import dev.hieplp.pastebin.domain.model.PasteFile;
+import dev.hieplp.pastebin.domain.vo.StorageKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +16,7 @@ import java.nio.file.Path;
 
 @Slf4j
 @Repository
-public class LocalStorageAdapter implements UploadFilePort, ReadFilePort {
+public class LocalStorageAdapter implements UploadStoragePort, ReadStoragePort, DeleteStoragePort {
 
     private final Path root;
 
@@ -23,9 +25,9 @@ public class LocalStorageAdapter implements UploadFilePort, ReadFilePort {
     }
 
     @Override
-    public String upload(PasteFile file) {
+    public StorageKey upload(PasteFile file) {
         var key = file.getStorageKey();
-        var target = root.resolve(key);
+        var target = root.resolve(key.value());
         try {
             Files.createDirectories(target.getParent());
             Files.write(target, file.getContent());
@@ -37,9 +39,9 @@ public class LocalStorageAdapter implements UploadFilePort, ReadFilePort {
     }
 
     @Override
-    public byte[] read(String storageKey) {
+    public byte[] read(StorageKey storageKey) {
         try {
-            var target = root.resolve(storageKey).normalize();
+            var target = root.resolve(storageKey.value()).normalize();
             if (!target.startsWith(root)) {
                 throw new BadRequestException("Invalid storage key: " + storageKey);
             }
@@ -49,6 +51,22 @@ public class LocalStorageAdapter implements UploadFilePort, ReadFilePort {
             return Files.readAllBytes(target);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to read file " + storageKey, e);
+        }
+    }
+
+    @Override
+    public void delete(StorageKey storageKey) {
+        if (storageKey == null || storageKey.value().isBlank()) {
+            return;
+        }
+        try {
+            var target = root.resolve(storageKey.value()).normalize();
+            if (target.startsWith(root)) {
+                Files.deleteIfExists(target);
+                log.info("Deleted file key={} at {}", storageKey, target);
+            }
+        } catch (IOException e) {
+            log.warn("Failed to delete file from storage key={}: {}", storageKey, e.getMessage());
         }
     }
 
