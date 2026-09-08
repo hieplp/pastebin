@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { AsyncState, CreatePasteRequest, DraftPaste, Paste } from '@/types'
 import { createAsyncRunner, createAsyncState } from '@/utils'
-import { pasteApi } from '@/api'
+import { fileApi, pasteApi } from '@/api'
 import type { CreatePasteResponse } from '@/api'
 
 /* ---- States ---- */
@@ -39,6 +39,7 @@ interface PasteActions {
   ) => Promise<CreatePasteResponse>
   fetchPaste: (pasteId: string | number) => Promise<Paste>
   deletePaste: (pasteId: string | number) => Promise<void>
+  fetchFileContent: (fileId: string) => Promise<void>
   clearCurrentPaste: () => void
 }
 
@@ -78,6 +79,28 @@ export const usePasteStore = create<PasteStore>()(
             set({ currentPaste: paste })
             return paste
           }),
+
+        fetchFileContent: async (fileId) => {
+          let content = ''
+          try {
+            const file = await fileApi.getFile(fileId)
+            content = file.content ?? ''
+          } catch {
+            // ponytail: empty content stops retry; keep the paste page up
+          }
+          set((state) => {
+            const paste = state.currentPaste
+            if (!paste?.files) return {}
+            return {
+              currentPaste: {
+                ...paste,
+                files: paste.files.map((f) =>
+                  f.fileId === fileId ? { ...f, content } : f,
+                ),
+              },
+            }
+          })
+        },
 
         deletePaste: (pasteId) =>
           run(async () => {

@@ -4,7 +4,7 @@ import dev.hieplp.pastebin.application.dto.file.command.DeleteFilesCommand;
 import dev.hieplp.pastebin.application.dto.file.result.DeleteFilesResult;
 import dev.hieplp.pastebin.application.port.in.file.DeleteFilesUseCase;
 import dev.hieplp.pastebin.application.port.out.file.DeleteFilePort;
-import dev.hieplp.pastebin.application.port.out.file.FindFilePort;
+import dev.hieplp.pastebin.application.port.out.file.GetFilePort;
 import dev.hieplp.pastebin.application.port.out.storage.DeleteStoragePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DeleteFilesService implements DeleteFilesUseCase {
 
-    private final FindFilePort findFilePort;
+    private final GetFilePort getFilePort;
     private final DeleteFilePort deleteFilePort;
 
     private final DeleteStoragePort deleteStoragePort;
@@ -29,7 +29,7 @@ public class DeleteFilesService implements DeleteFilesUseCase {
         var pasteId = command.pasteId();
         log.info("Deleting files of paste pasteId={}", pasteId);
 
-        var files = findFilePort.findByPasteId(pasteId);
+        var files = getFilePort.findByPasteId(pasteId);
         for (var file : files) {
             deleteStoragePort.delete(file.getStorageKey());
         }

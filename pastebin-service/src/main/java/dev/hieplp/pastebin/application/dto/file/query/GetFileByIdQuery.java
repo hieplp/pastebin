@@ -1,6 +1,6 @@
 package dev.hieplp.pastebin.application.dto.file.query;
 
-public record GetFilesByPasteQuery(
-        String pasteId
+public record GetFileByIdQuery(
+        String fileId
 ) {
 }

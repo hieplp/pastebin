@@ -2,13 +2,11 @@ package dev.hieplp.pastebin.adapter.in.web.mapper;
 
 import dev.hieplp.pastebin.adapter.in.web.payload.paste.CreatePasteRequest;
 import dev.hieplp.pastebin.adapter.in.web.payload.paste.CreatePasteResponse;
-import dev.hieplp.pastebin.adapter.in.web.payload.paste.GetFileResponse;
-import dev.hieplp.pastebin.adapter.in.web.payload.paste.GetPasteResponse;
+import dev.hieplp.pastebin.adapter.in.web.payload.paste.PasteResponse;
 import dev.hieplp.pastebin.application.dto.file.command.CreateFileCommand;
-import dev.hieplp.pastebin.application.dto.file.result.GetFileResult;
 import dev.hieplp.pastebin.application.dto.paste.command.CreatePasteCommand;
 import dev.hieplp.pastebin.application.dto.paste.result.CreatePasteResult;
-import dev.hieplp.pastebin.application.dto.paste.result.GetPasteResult;
+import dev.hieplp.pastebin.application.dto.paste.result.PasteResult;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -17,7 +15,7 @@ import java.util.List;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = VoMapper.class,
+        uses = {VoMapper.class, PasteFileMapper.class},
         implementationName = "PasteWebMapperImpl"
 )
 public interface PasteMapper {
@@ -27,8 +25,6 @@ public interface PasteMapper {
 
     CreatePasteResponse toResponse(CreatePasteResult result);
 
-    GetPasteResponse toResponse(GetPasteResult result);
-
-    GetFileResponse toResponse(GetFileResult result);
+    PasteResponse toResponse(PasteResult result);
 
 }

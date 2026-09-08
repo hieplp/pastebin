@@ -1,7 +1,7 @@
 package dev.hieplp.pastebin.adapter.out.persistence.adapter;
 
 import dev.hieplp.pastebin.adapter.out.persistence.mapper.PasteMapper;
-import dev.hieplp.pastebin.adapter.out.persistence.mapper.VoPersistenceMapperImpl;
+import dev.hieplp.pastebin.adapter.out.persistence.mapper.VoMapper;
 import dev.hieplp.pastebin.adapter.out.persistence.repository.PasteRepository;
 import dev.hieplp.pastebin.application.port.out.paste.DeletePastePort;
 import dev.hieplp.pastebin.application.port.out.paste.ExistPastePort;
@@ -25,9 +25,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PasteAdapter implements SavePastePort, GetPastePort, DeletePastePort, ExistPastePort {
 
-    private final PasteRepository pasteRepo;
+    private final VoMapper voMapper;
     private final PasteMapper pasteMapper;
-    private final VoPersistenceMapperImpl voMapper;
+
+    private final PasteRepository pasteRepo;
 
     @Override
     public Paste save(Paste paste) {
@@ -45,6 +46,15 @@ public class PasteAdapter implements SavePastePort, GetPastePort, DeletePastePor
         }
         var trimmed = idOrAlias.trim();
         return pasteRepo.findByPasteIdOrAlias(trimmed, trimmed)
+                .map(pasteMapper::toModel);
+    }
+
+    @Override
+    public Optional<Paste> findById(PasteId pasteId) {
+        if (pasteId == null) {
+            return Optional.empty();
+        }
+        return pasteRepo.findById(pasteId.value())
                 .map(pasteMapper::toModel);
     }
 

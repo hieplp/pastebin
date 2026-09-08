@@ -1,10 +1,10 @@
 package dev.hieplp.pastebin.application.port.in.paste;
 
 import dev.hieplp.pastebin.application.dto.paste.query.GetPasteQuery;
-import dev.hieplp.pastebin.application.dto.paste.result.GetPasteResult;
+import dev.hieplp.pastebin.application.dto.paste.result.PasteResult;
 
 public interface GetPasteUseCase {
 
-    GetPasteResult get(GetPasteQuery query);
+    PasteResult get(GetPasteQuery query);
 
 }

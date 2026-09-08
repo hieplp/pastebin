@@ -1,12 +1,24 @@
+import { SpinnerIcon } from '@/components/icons'
+
 interface DetailCodeAreaProps {
   content: string
   isRaw?: boolean
+  loading?: boolean
 }
 
 export function DetailCodeArea({
   content,
   isRaw = false,
+  loading = false,
 }: DetailCodeAreaProps) {
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center min-h-105 text-zinc-400">
+        <SpinnerIcon className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    )
+  }
+
   if (isRaw) {
     return (
       <div className="relative flex-1 flex flex-col p-4 sm:p-5 overflow-auto max-h-[72vh] min-h-105">
@@ -17,29 +29,18 @@ export function DetailCodeArea({
     )
   }
 
-  /* ---- States ---- */
-  const lines = content.split('\n')
+  // ponytail: two <pre> nodes beat a <tr> per line
+  const lineCount = content.split('\n').length
+  const gutter = Array.from({ length: lineCount }, (_, i) => i + 1).join('\n')
 
-  /* ---- Render ---- */
   return (
-    <div className="relative flex-1 flex flex-col overflow-auto max-h-[72vh] min-h-105">
-      <table className="w-full border-collapse font-mono text-[13px] leading-6 text-left">
-        <tbody>
-          {lines.map((line, idx) => (
-            <tr
-              key={idx}
-              className="hover:bg-zinc-100/60 dark:hover:bg-zinc-800/30 transition-colors group"
-            >
-              <td className="w-12 py-0.5 px-3 text-right text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 select-none text-xs align-top border-r border-zinc-200/80 dark:border-zinc-800/80">
-                {idx + 1}
-              </td>
-              <td className="py-0.5 px-4 text-zinc-900 dark:text-zinc-100 whitespace-pre overflow-x-auto align-top selection:bg-primary-500/20">
-                {line || '\n'}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="relative flex-1 flex overflow-auto max-h-[72vh] min-h-105">
+      <pre className="sticky left-0 w-12 py-0.5 px-3 text-right text-zinc-400 dark:text-zinc-600 select-none text-xs leading-6 font-mono border-r border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 shrink-0">
+        {gutter}
+      </pre>
+      <pre className="flex-1 py-0.5 px-4 font-mono text-[13px] leading-6 text-zinc-900 dark:text-zinc-100 whitespace-pre selection:bg-primary-500/20">
+        {content}
+      </pre>
     </div>
   )
 }

@@ -1,9 +1,7 @@
 package dev.hieplp.pastebin.application.service.paste;
 
-import dev.hieplp.pastebin.application.dto.file.query.GetFilesByPasteQuery;
-import dev.hieplp.pastebin.application.dto.file.result.GetFileResult;
 import dev.hieplp.pastebin.application.dto.paste.query.GetPasteQuery;
-import dev.hieplp.pastebin.application.port.in.file.GetFilesByPasteUseCase;
+import dev.hieplp.pastebin.application.port.out.file.GetFilePort;
 import dev.hieplp.pastebin.application.port.out.paste.GetPastePort;
 import dev.hieplp.pastebin.application.port.out.paste.SavePastePort;
 import dev.hieplp.pastebin.domain.enums.PasteStatus;
@@ -14,6 +12,10 @@ import dev.hieplp.pastebin.domain.model.Paste;
 import dev.hieplp.pastebin.domain.vo.Actor;
 import dev.hieplp.pastebin.domain.vo.Alias;
 import dev.hieplp.pastebin.domain.vo.Content;
+import dev.hieplp.pastebin.domain.model.PasteFile;
+import dev.hieplp.pastebin.domain.vo.FileName;
+import dev.hieplp.pastebin.domain.vo.FileId;
+import dev.hieplp.pastebin.domain.vo.StorageKey;
 import dev.hieplp.pastebin.domain.vo.Title;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +42,7 @@ class GetPasteServiceTest {
     private SavePastePort savePastePort;
 
     @Mock
-    private GetFilesByPasteUseCase getFilesByPasteUseCase;
+    private GetFilePort getFilePort;
 
     @InjectMocks
     private GetPasteService getPasteService;
@@ -64,19 +66,23 @@ class GetPasteServiceTest {
     @Test
     void get_activePasteWithFile_returnsResultWithFileId() {
         var query = new GetPasteQuery("test-alias");
-        var fileId = "file-123";
-        var fileResult = new GetFileResult(fileId, "hello.txt", 5, "hello");
+        var file = new PasteFile();
+        file.setFileId(FileId.of("file-123"));
+        file.setName(FileName.of("hello.txt"));
+        file.setSize(5);
+        file.setStorageKey(StorageKey.of("k-1"));
+        file.setPasteId(paste.getPasteId());
 
         when(getPastePort.getByIdOrAlias("test-alias")).thenReturn(paste);
-        when(getFilesByPasteUseCase.getFiles(new GetFilesByPasteQuery(paste.getPasteId().value()))).thenReturn(List.of(fileResult));
+        when(getFilePort.findByPasteId(paste.getPasteId())).thenReturn(List.of(file));
 
         var result = getPasteService.get(query);
 
         assertNotNull(result);
         assertEquals("test-alias", result.alias());
         assertEquals(1, result.files().size());
-        assertEquals(fileId, result.files().getFirst().fileId());
-        assertEquals("hello", result.files().getFirst().content());
+        assertEquals("file-123", result.files().getFirst().fileId());
+        assertNull(result.files().getFirst().content());
     }
 
     @Test
@@ -98,7 +104,7 @@ class GetPasteServiceTest {
         var query = new GetPasteQuery("test-alias");
 
         when(getPastePort.getByIdOrAlias("test-alias")).thenReturn(paste);
-        when(getFilesByPasteUseCase.getFiles(new GetFilesByPasteQuery(paste.getPasteId().value()))).thenReturn(List.of());
+        when(getFilePort.findByPasteId(paste.getPasteId())).thenReturn(List.of());
 
         var result = getPasteService.get(query);
 
@@ -121,10 +127,15 @@ class GetPasteServiceTest {
     @Test
     void get_missingFileOnDisk_handlesGracefully() {
         var query = new GetPasteQuery("test-alias");
-        var fileResult = new GetFileResult("file-123", "hello.txt", 5, null);
+        var file = new PasteFile();
+        file.setFileId(FileId.of("file-123"));
+        file.setName(FileName.of("hello.txt"));
+        file.setSize(5);
+        file.setStorageKey(StorageKey.of("k-1"));
+        file.setPasteId(paste.getPasteId());
 
         when(getPastePort.getByIdOrAlias("test-alias")).thenReturn(paste);
-        when(getFilesByPasteUseCase.getFiles(new GetFilesByPasteQuery(paste.getPasteId().value()))).thenReturn(List.of(fileResult));
+        when(getFilePort.findByPasteId(paste.getPasteId())).thenReturn(List.of(file));
 
         var result = getPasteService.get(query);
 

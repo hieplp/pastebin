@@ -24,6 +24,8 @@ class PasteFileAdapterTest {
     @Mock
     private PasteFileMapper pasteFileMapper;
 
+    @Mock
+    private dev.hieplp.pastebin.adapter.out.persistence.mapper.VoMapper voMapper;
 
     @InjectMocks
     private PasteFileAdapter pasteFileAdapter;
@@ -48,6 +50,7 @@ class PasteFileAdapterTest {
         file2.setStorageKey("uploads/p-1/f-2.txt");
 
         when(pasteFileRepo.findByPasteIdIn(List.of("p-1"))).thenReturn(List.of(file1, file2));
+        when(voMapper.toPasteIdStrings(List.of(PasteId.of("p-1")))).thenReturn(List.of("p-1"));
 
         pasteFileAdapter.deleteByPasteIds(List.of(PasteId.of("p-1")));
 
@@ -57,6 +60,7 @@ class PasteFileAdapterTest {
     @Test
     void deleteByPasteIds_whenNoFilesFound_doesNothing() {
         when(pasteFileRepo.findByPasteIdIn(List.of("p-1"))).thenReturn(List.of());
+        when(voMapper.toPasteIdStrings(List.of(PasteId.of("p-1")))).thenReturn(List.of("p-1"));
 
         pasteFileAdapter.deleteByPasteIds(List.of(PasteId.of("p-1")));
 

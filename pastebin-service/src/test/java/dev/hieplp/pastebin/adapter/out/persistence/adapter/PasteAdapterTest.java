@@ -28,6 +28,9 @@ class PasteAdapterTest {
     @Mock
     private PasteMapper pasteMapper;
 
+    @Mock
+    private dev.hieplp.pastebin.adapter.out.persistence.mapper.VoMapper voMapper;
+
     @InjectMocks
     private PasteAdapter pasteAdapter;
 
@@ -50,6 +53,7 @@ class PasteAdapterTest {
     @Test
     void deleteAll_whenPastesPresent_deletesInBatch() {
         var pasteIds = List.of(PasteId.of("p-1"), PasteId.of("p-2"));
+        when(voMapper.toPasteIdStrings(pasteIds)).thenReturn(List.of("p-1", "p-2"));
 
         pasteAdapter.deleteAll(pasteIds);
 

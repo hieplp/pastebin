@@ -1,6 +1,6 @@
 package dev.hieplp.pastebin.application.dto.paste.result;
 
-import dev.hieplp.pastebin.application.dto.file.result.GetFileResult;
+import dev.hieplp.pastebin.application.dto.file.result.FileResult;
 import dev.hieplp.pastebin.domain.enums.Privacy;
 import dev.hieplp.pastebin.domain.enums.Syntax;
 import dev.hieplp.pastebin.domain.model.Paste;
@@ -8,7 +8,7 @@ import dev.hieplp.pastebin.domain.model.Paste;
 import java.time.Instant;
 import java.util.List;
 
-public record GetPasteResult(
+public record PasteResult(
         String pasteId,
         String title,
         String alias,
@@ -17,11 +17,11 @@ public record GetPasteResult(
         Syntax syntax,
         Instant createdAt,
         Instant expiredAt,
-        List<GetFileResult> files
+        List<FileResult> files
 ) {
 
-    public static GetPasteResult from(Paste paste, List<GetFileResult> files) {
-        return new GetPasteResult(
+    public static PasteResult from(Paste paste, List<FileResult> files) {
+        return new PasteResult(
                 paste.getPasteId().value(),
                 paste.getTitle() != null ? paste.getTitle().value() : null,
                 paste.getAlias() != null ? paste.getAlias().value() : null,

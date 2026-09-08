@@ -26,7 +26,7 @@ public class PasteCleanupScheduler implements SchedulingConfigurer {
         taskRegistrar.addCronTask(this::deleteExpiredOrInactivePastes, cleanupProperties.cron());
     }
 
-    private void deleteExpiredOrInactivePastes() {
+    void deleteExpiredOrInactivePastes() {
         var command = new DeleteExpiredPastesCommand(Instant.now());
         deleteExpiredPastesUseCase.delete(command);
     }

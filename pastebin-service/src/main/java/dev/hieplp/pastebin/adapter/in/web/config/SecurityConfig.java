@@ -35,7 +35,7 @@ public class SecurityConfig {
                                 "/actuator/**",
                                 "/error"
                         ).permitAll()
-                        .requestMatchers("/pastes", "/pastes/**").permitAll()
+                        .requestMatchers("/pastes", "/pastes/**", "/files", "/files/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();

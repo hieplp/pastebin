@@ -1,10 +1,10 @@
 package dev.hieplp.pastebin.adapter.out.persistence.adapter;
 
 import dev.hieplp.pastebin.adapter.out.persistence.mapper.PasteFileMapper;
-import dev.hieplp.pastebin.adapter.out.persistence.mapper.VoPersistenceMapperImpl;
+import dev.hieplp.pastebin.adapter.out.persistence.mapper.VoMapper;
 import dev.hieplp.pastebin.adapter.out.persistence.repository.PasteFileRepository;
 import dev.hieplp.pastebin.application.port.out.file.DeleteFilePort;
-import dev.hieplp.pastebin.application.port.out.file.FindFilePort;
+import dev.hieplp.pastebin.application.port.out.file.GetFilePort;
 import dev.hieplp.pastebin.application.port.out.file.SaveFilePort;
 import dev.hieplp.pastebin.domain.model.PasteFile;
 import dev.hieplp.pastebin.domain.vo.PasteId;
@@ -13,15 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class PasteFileAdapter implements SaveFilePort, FindFilePort, DeleteFilePort {
+public class PasteFileAdapter implements SaveFilePort, GetFilePort, DeleteFilePort {
+
+    private final VoMapper voMapper;
+    private final PasteFileMapper pasteFileMapper;
 
     private final PasteFileRepository pasteFileRepo;
-    private final PasteFileMapper pasteFileMapper;
-    private final VoPersistenceMapperImpl voMapper;
 
     @Override
     public PasteFile save(PasteFile file) {
@@ -46,6 +48,12 @@ public class PasteFileAdapter implements SaveFilePort, FindFilePort, DeleteFileP
         return pasteFileMapper.toModels(
                 pasteFileRepo.findByPasteId(pasteId.value())
         );
+    }
+
+    @Override
+    public Optional<PasteFile> findById(String fileId) {
+        return pasteFileRepo.findById(fileId)
+                .map(pasteFileMapper::toModel);
     }
 
     @Override

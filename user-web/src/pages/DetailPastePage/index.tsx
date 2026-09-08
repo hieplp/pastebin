@@ -26,7 +26,8 @@ export function DetailPastePage({
   const routePasteId = matchPasteRoute(pathname)?.pasteId
   const activePasteId = propPasteId || routePasteId
 
-  const { currentPaste, fetchPaste, isLoading, error } = usePasteStore()
+  const { currentPaste, fetchPaste, fetchFileContent, isLoading, error } =
+    usePasteStore()
 
   const [isRaw, setIsRaw] = useState(false)
 
@@ -94,10 +95,20 @@ export function DetailPastePage({
 
   const {
     tab: resolvedTab,
+    file: activeFile,
     content: activeContent,
     syntax: activeSyntax,
     title: activeTitle,
   } = view
+
+  const filePending = Boolean(activeFile?.fileId) && activeFile?.content == null
+
+  useEffect(() => {
+    if (!activeFile?.fileId || activeFile.content != null) {
+      return
+    }
+    void fetchFileContent(activeFile.fileId)
+  }, [activeFile, fetchFileContent])
 
   /* ---- Functions ---- */
 
@@ -149,7 +160,11 @@ export function DetailPastePage({
         />
 
         {/* Code View Area */}
-        <DetailCodeArea content={activeContent} isRaw={isRaw} />
+        <DetailCodeArea
+          content={activeContent}
+          isRaw={isRaw}
+          loading={filePending}
+        />
       </DetailContainer>
 
       {/* Bottom Actions */}

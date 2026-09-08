@@ -45,7 +45,6 @@ export const pasteApi = {
   getById(pasteId: string | number): Promise<PasteItem> {
     return api.get(`pastes/${pasteId}`).json<PasteItem>()
   },
-
   delete(pasteId: string | number): Promise<void> {
     return api.delete(`pastes/${pasteId}`).json()
   },

@@ -2,7 +2,7 @@ package dev.hieplp.pastebin.application.service.file;
 
 import dev.hieplp.pastebin.application.dto.file.command.DeleteFilesCommand;
 import dev.hieplp.pastebin.application.port.out.file.DeleteFilePort;
-import dev.hieplp.pastebin.application.port.out.file.FindFilePort;
+import dev.hieplp.pastebin.application.port.out.file.GetFilePort;
 import dev.hieplp.pastebin.application.port.out.storage.DeleteStoragePort;
 import dev.hieplp.pastebin.domain.model.PasteFile;
 import dev.hieplp.pastebin.domain.vo.PasteId;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 class DeleteFilesServiceTest {
 
     @Mock
-    private FindFilePort findFilePort;
+    private GetFilePort getFilePort;
 
     @Mock
     private DeleteStoragePort deleteStoragePort;
@@ -44,12 +44,12 @@ class DeleteFilesServiceTest {
         var file2 = new PasteFile();
         file2.setStorageKey(StorageKey.of("uploads/p-1/f-2.txt"));
 
-        when(findFilePort.findByPasteId(pasteId)).thenReturn(List.of(file1, file2));
+        when(getFilePort.findByPasteId(pasteId)).thenReturn(List.of(file1, file2));
 
         var result = deleteFilesService.delete(new DeleteFilesCommand(pasteId));
 
         assertEquals(2, result.deletedCount());
-        verify(findFilePort).findByPasteId(pasteId);
+        verify(getFilePort).findByPasteId(pasteId);
         verify(deleteStoragePort).delete(StorageKey.of("uploads/p-1/f-1.txt"));
         verify(deleteStoragePort).delete(StorageKey.of("uploads/p-1/f-2.txt"));
         verify(deleteFilePort).deleteByPasteId(pasteId);
@@ -59,12 +59,12 @@ class DeleteFilesServiceTest {
     void delete_whenPasteHasNoFiles_deletesNoStorageAndZeroCount() {
         var pasteId = PasteId.of("p-2");
 
-        when(findFilePort.findByPasteId(pasteId)).thenReturn(List.of());
+        when(getFilePort.findByPasteId(pasteId)).thenReturn(List.of());
 
         var result = deleteFilesService.delete(new DeleteFilesCommand(pasteId));
 
         assertEquals(0, result.deletedCount());
-        verify(findFilePort).findByPasteId(pasteId);
+        verify(getFilePort).findByPasteId(pasteId);
         verifyNoInteractions(deleteStoragePort);
         verify(deleteFilePort).deleteByPasteId(pasteId);
     }

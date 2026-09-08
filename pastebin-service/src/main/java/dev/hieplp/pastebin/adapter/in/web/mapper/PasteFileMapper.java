@@ -1,6 +1,8 @@
 package dev.hieplp.pastebin.adapter.in.web.mapper;
 
+import dev.hieplp.pastebin.adapter.in.web.payload.file.FileResponse;
 import dev.hieplp.pastebin.application.dto.file.command.CreateFileCommand;
+import dev.hieplp.pastebin.application.dto.file.result.FileResult;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,9 +15,10 @@ import java.util.List;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = VoMapper.class
+        uses = VoMapper.class,
+        implementationName = "PasteFileWebMapperImpl"
 )
-public interface MultipartFileMapper {
+public interface PasteFileMapper {
 
     @Mapping(target = "name", source = "originalFilename")
     @Mapping(target = "contentType", source = "contentType")
@@ -24,5 +27,7 @@ public interface MultipartFileMapper {
 
     @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
     List<CreateFileCommand> toCommands(List<MultipartFile> files) throws IOException;
+
+    FileResponse toResponse(FileResult result);
 
 }

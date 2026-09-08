@@ -62,6 +62,14 @@ public class Paste extends Auditable {
         return expiredAt != null && expiredAt.isBefore(Instant.now());
     }
 
+    /**
+     * Read-only accessibility: not expired AND (active OR burn-after-read).
+     * Burned pastes stay readable so tab fetches after GET /pastes/{id} still work.
+     */
+    public boolean isAccessible() {
+        return !isExpired() && (isActive() || burnAfterRead);
+    }
+
     public void deactivate() {
         this.status = PasteStatus.INACTIVE;
     }
