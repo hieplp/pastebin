@@ -13,7 +13,15 @@ spring:
     open-in-view: false
 pastebin:
   storage:
+    type: ${PASTEBIN_STORAGE_TYPE:s3}
     local:
       root: uploads
+    s3:
+      bucket: ${S3_BUCKET:pastebin}
+      region: ${S3_REGION:us-east-1}
+      access-key: ${S3_ACCESS_KEY:pastebin}
+      secret-key: ${S3_SECRET_KEY:pastebin}
+      endpoint: ${S3_ENDPOINT:http://127.0.0.1:9002}
+      path-style: true
   cleanup:
     cron: "0 0 * * * *"
