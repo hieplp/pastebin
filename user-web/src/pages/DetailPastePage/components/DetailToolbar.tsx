@@ -4,12 +4,14 @@ import type { Paste } from '@/types'
 
 interface DetailToolbarProps {
   paste: Paste
+  fileId?: string
   onToggleRaw: () => void
   isRaw: boolean
 }
 
 export function DetailToolbar({
   paste,
+  fileId,
   onToggleRaw,
   isRaw,
 }: DetailToolbarProps) {
@@ -66,6 +68,7 @@ export function DetailToolbar({
           content={paste.content}
           title={paste.title}
           syntax={paste.syntax || 'plaintext'}
+          fileId={fileId}
         />
       </div>
     </div>

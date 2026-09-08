@@ -13,27 +13,30 @@ export class ApiError extends Error {
 }
 
 const rawBase = import.meta.env.VITE_API_URL || '/api'
-const prefix = rawBase.startsWith('http')
-  ? rawBase
-  : typeof window !== 'undefined'
-    ? new URL(rawBase, window.location.origin).toString()
-    : rawBase
+export const apiPrefix = (
+  rawBase.startsWith('http')
+    ? rawBase
+    : typeof window !== 'undefined'
+      ? new URL(rawBase, window.location.origin).toString()
+      : rawBase
+).replace(/\/$/, '')
 
 // ponytail: lightweight Ky HTTP client configured with cookie credentials and backend response unwrapping
 export const api = ky.create({
-  prefix,
+  prefix: apiPrefix,
   credentials: 'include',
   hooks: {
     afterResponse: [
       async ({ response }) => {
-        if (response.ok && response.status !== 204) {
-          const json: unknown = await response.json()
-          const unwrapped =
-            json && typeof json === 'object' && 'data' in json
-              ? (json as Record<string, unknown>).data
-              : json
-          return new Response(JSON.stringify(unwrapped), response)
-        }
+        if (!response.ok || response.status === 204) return
+        const ct = response.headers.get('content-type') ?? ''
+        if (!ct.includes('application/json')) return
+        const json: unknown = await response.json()
+        const unwrapped =
+          json && typeof json === 'object' && 'data' in json
+            ? (json as Record<string, unknown>).data
+            : json
+        return new Response(JSON.stringify(unwrapped), response)
       },
     ],
     beforeError: [

@@ -1,12 +1,14 @@
 import { cn } from '@/utils'
 import { DownloadIcon } from '@/components/icons'
 import { SYNTAX_TO_EXT } from '@/constants.ts'
+import { fileApi } from '@/api'
 import type { ButtonHTMLAttributes } from 'react'
 
 export interface DownloadButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   content: string
   title: string
   syntax: string
+  fileId?: string
 }
 
 // download button for exporting paste as file
@@ -14,26 +16,30 @@ export function DownloadButton({
   content,
   title,
   syntax,
+  fileId,
   className = '',
   ...props
 }: DownloadButtonProps) {
   const handleDownload = () => {
-    const blob = new Blob([content], {
-      type: 'text/plain;charset=utf-8',
-    })
-    const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
-    a.href = url
+    let objectUrl: string | undefined
 
-    const ext = SYNTAX_TO_EXT[syntax] || 'txt'
-    const hasExt = title.includes('.')
-    const filename = hasExt ? title : `${title}.${ext}`
+    if (fileId) {
+      a.href = fileApi.downloadUrl(fileId)
+      a.download = title
+    } else {
+      objectUrl = URL.createObjectURL(
+        new Blob([content], { type: 'text/plain;charset=utf-8' }),
+      )
+      a.href = objectUrl
+      const ext = SYNTAX_TO_EXT[syntax] || 'txt'
+      a.download = title.includes('.') ? title : `${title}.${ext}`
+    }
 
-    a.download = filename
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    if (objectUrl) URL.revokeObjectURL(objectUrl)
   }
 
   return (

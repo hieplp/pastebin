@@ -148,6 +148,7 @@ export function DetailPastePage({
             syntax: activeSyntax,
             content: activeContent,
           }}
+          fileId={activeFile?.fileId}
           onToggleRaw={() => setIsRaw((prev) => !prev)}
           isRaw={isRaw}
         />
