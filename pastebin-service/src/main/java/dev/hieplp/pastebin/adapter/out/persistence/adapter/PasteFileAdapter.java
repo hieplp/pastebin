@@ -8,6 +8,7 @@ import dev.hieplp.pastebin.application.port.out.file.GetFilePort;
 import dev.hieplp.pastebin.application.port.out.file.SaveFilePort;
 import dev.hieplp.pastebin.domain.model.PasteFile;
 import dev.hieplp.pastebin.domain.vo.PasteId;
+import dev.hieplp.pastebin.domain.vo.StorageKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -54,6 +55,13 @@ public class PasteFileAdapter implements SaveFilePort, GetFilePort, DeleteFilePo
     public Optional<PasteFile> findById(String fileId) {
         return pasteFileRepo.findById(fileId)
                 .map(pasteFileMapper::toModel);
+    }
+
+    @Override
+    public List<StorageKey> findAllStorageKeys() {
+        return pasteFileRepo.findAllStorageKeys().stream()
+                .map(voMapper::stringToStorageKey)
+                .toList();
     }
 
     @Override

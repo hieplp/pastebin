@@ -1,6 +1,7 @@
 package dev.hieplp.pastebin.adapter.in.schedule;
 
 import dev.hieplp.pastebin.application.dto.paste.command.DeleteExpiredPastesCommand;
+import dev.hieplp.pastebin.application.port.in.file.DeleteOrphanFilesUseCase;
 import dev.hieplp.pastebin.application.port.in.paste.DeleteExpiredPastesUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +17,8 @@ class PasteCleanupSchedulerTest {
 
     @Mock
     private DeleteExpiredPastesUseCase deleteExpiredPastesUseCase;
-
+    @Mock
+    private DeleteOrphanFilesUseCase deleteOrphanFilesUseCase;
     @InjectMocks
     private PasteCleanupScheduler pasteCleanupScheduler;
 
@@ -25,5 +27,12 @@ class PasteCleanupSchedulerTest {
         pasteCleanupScheduler.deleteExpiredOrInactivePastes();
 
         verify(deleteExpiredPastesUseCase).delete(any(DeleteExpiredPastesCommand.class));
+    }
+
+    @Test
+    void deleteOrphanFiles_delegatesToUseCase() {
+        pasteCleanupScheduler.deleteOrphanFiles();
+
+        verify(deleteOrphanFilesUseCase).delete();
     }
 }

@@ -22,12 +22,12 @@ public class DeletePasteService implements DeletePasteUseCase {
     @Transactional
     @Override
     public DeletePasteResult delete(DeletePasteCommand command) {
-        var pasteId = command.pasteId();
-        log.info("Deleting paste pasteId={}", pasteId);
-
-        if (pasteId == null) {
+        if (command == null || command.pasteId() == null) {
+            log.info("Deleting paste skipped: null command or pasteId");
             return new DeletePasteResult(null);
         }
+        var pasteId = command.pasteId();
+        log.info("Deleting paste pasteId={}", pasteId);
 
         var deletedFiles = deleteFilesUseCase.delete(pasteId).deletedCount();
         deletePastePort.deleteById(pasteId);

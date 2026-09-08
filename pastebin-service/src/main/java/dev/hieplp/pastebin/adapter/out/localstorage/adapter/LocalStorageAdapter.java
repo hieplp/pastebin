@@ -2,6 +2,7 @@ package dev.hieplp.pastebin.adapter.out.localstorage.adapter;
 
 import dev.hieplp.pastebin.adapter.out.localstorage.config.LocalStorageProperties;
 import dev.hieplp.pastebin.application.port.out.storage.DeleteStoragePort;
+import dev.hieplp.pastebin.application.port.out.storage.ListStoragePort;
 import dev.hieplp.pastebin.application.port.out.storage.ReadStoragePort;
 import dev.hieplp.pastebin.application.port.out.storage.UploadStoragePort;
 import dev.hieplp.pastebin.domain.exception.BadRequestException;
@@ -13,11 +14,12 @@ import org.springframework.stereotype.Repository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 @Slf4j
 @ConditionalOnProperty(name = "pastebin.storage.type", havingValue = "local", matchIfMissing = true)
 @Repository
-public class LocalStorageAdapter implements UploadStoragePort, ReadStoragePort, DeleteStoragePort {
+public class LocalStorageAdapter implements UploadStoragePort, ReadStoragePort, DeleteStoragePort, ListStoragePort {
 
     private final Path root;
 
@@ -52,6 +54,23 @@ public class LocalStorageAdapter implements UploadStoragePort, ReadStoragePort, 
             return Files.readAllBytes(target);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to read file " + storageKey, e);
+        }
+    }
+
+    @Override
+    public List<StorageKey> listKeys() {
+        if (!Files.isDirectory(root)) {
+            log.warn("Storage root {} does not exist; nothing to scan", root);
+            return List.of();
+        }
+        try (var paths = Files.walk(root)) {
+            return paths
+                    .filter(Files::isRegularFile)
+                    .filter(path -> !path.getFileName().toString().startsWith("."))
+                    .map(path -> StorageKey.of(root.relativize(path).toString().replace('\\', '/')))
+                    .toList();
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to list files under " + root, e);
         }
     }
 

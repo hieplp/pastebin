@@ -18,11 +18,17 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,4 +75,26 @@ class S3StorageAdapterTest {
         assertThrows(BadRequestException.class, () -> adapter.read(StorageKey.of("missing")));
     }
 
+    @Test
+    void listKeys_returnsKeys() {
+        stubListedObjects(
+                S3Object.builder().key("a").build(),
+                S3Object.builder().key("b").build());
+
+        assertEquals(List.of(StorageKey.of("a"), StorageKey.of("b")), adapter.listKeys());
+    }
+
+    @Test
+    void listKeys_emptyBucket_returnsEmpty() {
+        stubListedObjects();
+
+        assertEquals(List.of(), adapter.listKeys());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void stubListedObjects(S3Object... objects) {
+        var paginator = mock(ListObjectsV2Iterable.class);
+        when(paginator.contents()).thenReturn(() -> List.of(objects).iterator());
+        when(s3.listObjectsV2Paginator(any(Consumer.class))).thenReturn(paginator);
+    }
 }

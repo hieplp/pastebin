@@ -13,7 +13,7 @@ spring:
     open-in-view: false
 pastebin:
   storage:
-    type: ${PASTEBIN_STORAGE_TYPE:s3}
+    type: ${PASTEBIN_STORAGE_TYPE:local}
     local:
       root: uploads
     s3:
@@ -24,4 +24,6 @@ pastebin:
       endpoint: ${S3_ENDPOINT:http://127.0.0.1:9002}
       path-style: true
   cleanup:
-    cron: "0 0 * * * *"
+    expired-paste-cron: "0 0 * * * *"
+    # weekly orphan-file sweep: Sunday 03:00
+    orphan-cron: "0 0 3 * * SUN"

@@ -2,6 +2,7 @@ package dev.hieplp.pastebin.adapter.out.s3.adapter;
 
 import dev.hieplp.pastebin.adapter.out.s3.config.S3StorageProperties;
 import dev.hieplp.pastebin.application.port.out.storage.DeleteStoragePort;
+import dev.hieplp.pastebin.application.port.out.storage.ListStoragePort;
 import dev.hieplp.pastebin.application.port.out.storage.ReadStoragePort;
 import dev.hieplp.pastebin.application.port.out.storage.UploadStoragePort;
 import dev.hieplp.pastebin.domain.exception.BadRequestException;
@@ -19,11 +20,13 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+import java.util.List;
+
 @Slf4j
 @Repository
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "pastebin.storage.type", havingValue = "s3")
-public class S3StorageAdapter implements UploadStoragePort, ReadStoragePort, DeleteStoragePort {
+public class S3StorageAdapter implements UploadStoragePort, ReadStoragePort, DeleteStoragePort, ListStoragePort {
 
     private final S3Client s3;
     private final S3StorageProperties props;
@@ -78,6 +81,18 @@ public class S3StorageAdapter implements UploadStoragePort, ReadStoragePort, Del
             log.info("Deleted file key={} bucket={}", storageKey, props.bucket());
         } catch (S3Exception e) {
             log.warn("Failed to delete file from storage key={}: {}", storageKey, e.getMessage());
+        }
+    }
+
+    @Override
+    public List<StorageKey> listKeys() {
+        try {
+            return s3.listObjectsV2Paginator(r -> r.bucket(props.bucket()))
+                    .contents().stream()
+                    .map(obj -> StorageKey.of(obj.key()))
+                    .toList();
+        } catch (S3Exception e) {
+            throw new IllegalStateException("Failed to list objects in bucket " + props.bucket(), e);
         }
     }
 
