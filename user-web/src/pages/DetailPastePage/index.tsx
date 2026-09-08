@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { AppLayout } from '@/components/layout'
 import {
   DetailContainer,
@@ -30,9 +30,11 @@ export function DetailPastePage({
     usePasteStore()
 
   const [isRaw, setIsRaw] = useState(false)
+  const fetchedId = useRef('')
 
   useEffect(() => {
-    if (!activePasteId) return
+    if (!activePasteId || fetchedId.current === activePasteId) return
+    fetchedId.current = activePasteId
     void fetchPaste(activePasteId).catch(() => {})
   }, [activePasteId, fetchPaste])
 
