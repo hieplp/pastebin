@@ -1,13 +1,6 @@
 package dev.hieplp.pastebin.adapter.in.web.mapper;
 
-import dev.hieplp.pastebin.domain.vo.Actor;
-import dev.hieplp.pastebin.domain.vo.Alias;
-import dev.hieplp.pastebin.domain.vo.Content;
-import dev.hieplp.pastebin.domain.vo.ContentType;
-import dev.hieplp.pastebin.domain.vo.FileId;
-import dev.hieplp.pastebin.domain.vo.FileName;
-import dev.hieplp.pastebin.domain.vo.PasteId;
-import dev.hieplp.pastebin.domain.vo.Title;
+import dev.hieplp.pastebin.domain.vo.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 

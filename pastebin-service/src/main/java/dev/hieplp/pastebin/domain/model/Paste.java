@@ -3,11 +3,7 @@ package dev.hieplp.pastebin.domain.model;
 import dev.hieplp.pastebin.domain.enums.PasteStatus;
 import dev.hieplp.pastebin.domain.enums.Privacy;
 import dev.hieplp.pastebin.domain.enums.Syntax;
-import dev.hieplp.pastebin.domain.vo.Actor;
-import dev.hieplp.pastebin.domain.vo.Alias;
-import dev.hieplp.pastebin.domain.vo.Content;
-import dev.hieplp.pastebin.domain.vo.PasteId;
-import dev.hieplp.pastebin.domain.vo.Title;
+import dev.hieplp.pastebin.domain.vo.*;
 import lombok.Getter;
 import lombok.Setter;
 

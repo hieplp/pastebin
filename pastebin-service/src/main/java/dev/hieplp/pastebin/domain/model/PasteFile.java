@@ -1,10 +1,6 @@
 package dev.hieplp.pastebin.domain.model;
 
-import dev.hieplp.pastebin.domain.vo.ContentType;
-import dev.hieplp.pastebin.domain.vo.FileId;
-import dev.hieplp.pastebin.domain.vo.FileName;
-import dev.hieplp.pastebin.domain.vo.PasteId;
-import dev.hieplp.pastebin.domain.vo.StorageKey;
+import dev.hieplp.pastebin.domain.vo.*;
 import lombok.Getter;
 import lombok.Setter;
 
