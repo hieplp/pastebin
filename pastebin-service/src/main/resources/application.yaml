@@ -9,8 +9,13 @@ spring:
     password: pastebin
   jpa:
     hibernate:
-      ddl-auto: update
+      # schema is owned by Flyway (db/migration); validate catches drift
+      ddl-auto: validate
     open-in-view: false
+  flyway:
+    # pre-Flyway DBs (Hibernate-created schema, no history table) baseline at V1
+    baseline-on-migrate: true
+    baseline-version: 1
 pastebin:
   storage:
     type: ${PASTEBIN_STORAGE_TYPE:local}

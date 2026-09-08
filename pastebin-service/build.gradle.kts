@@ -34,6 +34,8 @@ dependencies {
     compileOnly("org.mapstruct:mapstruct:1.6.3")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
+    implementation("org.springframework.boot:spring-boot-flyway")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
