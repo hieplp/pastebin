@@ -5,11 +5,13 @@ import type { ButtonHTMLAttributes } from 'react'
 
 export interface CopyButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string
+  label?: string
 }
 
 // copy button with copied-state icon and label swapping
 export function CopyButton({
   text,
+  label = 'Copy',
   className = '',
   ...props
 }: CopyButtonProps) {
@@ -31,7 +33,7 @@ export function CopyButton({
       ) : (
         <>
           <CopyIcon className="h-3.5 w-3.5 text-zinc-400" />
-          <span>Copy</span>
+          <span>{label}</span>
         </>
       )}
     </button>

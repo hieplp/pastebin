@@ -1,6 +1,7 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { AppLayout } from '@/components/layout'
 import {
+  CreatedPasteCard,
   EditorArea,
   EditorContainer,
   EditorToolbar,
@@ -11,18 +12,19 @@ import { useFileUpload } from '@/hooks'
 import { getFileExtension } from '@/utils'
 import { EXTENSION_MAP } from '@/constants.ts'
 import { usePasteStore, useAlertStore } from '@/stores'
-import { navigate } from '@/lib/router'
+import type { CreatePasteResponse } from '@/api'
 import type { UploadedFile } from '@/types'
 
 export function CreatePastePage() {
   /* ---- Hooks ---- */
   const { draft, setDraft, clearDraft, createPaste, isLoading } =
     usePasteStore()
-  const { showSuccessAlert, showErrorAlert } = useAlertStore()
+  const { showErrorAlert } = useAlertStore()
   const { files, readFiles, clearFiles, removeFile } = useFileUpload()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   /* ---- States ---- */
+  const [created, setCreated] = useState<CreatePasteResponse | null>(null)
   const canClear = Boolean(draft.content || draft.title || files.length > 0)
   const canSubmit =
     Boolean(draft.content.trim() || files.length > 0) && !isLoading
@@ -73,10 +75,7 @@ export function CreatePastePage() {
         files.flatMap((f) => (f.file ? [f.file] : [])),
       )
       onClear()
-      showSuccessAlert(
-        `Paste "${draft.title || 'Untitled'}" created successfully!`,
-      )
-      navigate(`/pastes/${created.alias || created.pasteId}`)
+      setCreated(created)
     } catch (err) {
       showErrorAlert(
         err instanceof Error ? err.message : 'Failed to create paste',
@@ -98,62 +97,74 @@ export function CreatePastePage() {
   /* ---- Render ---- */
   return (
     <AppLayout>
-      {/* Editor Container */}
-      <EditorContainer
-        draft={draft}
-        onDropFiles={(files) => void readFiles(files)}
-      >
-        {/* Editor Toolbar */}
-        <EditorToolbar
-          title={draft.title}
-          syntax={draft.syntax}
-          expiration={draft.expiration}
-          onChange={(field, value: object) => {
-            setDraft((prev) => ({ ...prev, [field]: value }))
-          }}
-          onUploadClick={() => {
-            fileInputRef.current?.click()
-          }}
-        />
+      {created ? (
+        <div className="flex-1 flex items-center justify-center py-8">
+          <CreatedPasteCard
+            pasteId={created.pasteId}
+            alias={created.alias}
+            onCreateAnother={() => setCreated(null)}
+          />
+        </div>
+      ) : (
+        <>
+          {/* Editor Container */}
+          <EditorContainer
+            draft={draft}
+            onDropFiles={(files) => void readFiles(files)}
+          >
+            {/* Editor Toolbar */}
+            <EditorToolbar
+              title={draft.title}
+              syntax={draft.syntax}
+              expiration={draft.expiration}
+              onChange={(field, value: object) => {
+                setDraft((prev) => ({ ...prev, [field]: value }))
+              }}
+              onUploadClick={() => {
+                fileInputRef.current?.click()
+              }}
+            />
 
-        {/* Attached Files Bar */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          className="hidden"
-          onChange={(e) => {
-            void readFiles(e.target.files)
-            if (e.target) e.target.value = ''
-          }}
-        />
-        <UploadedFiles
-          files={files}
-          onClear={clearFiles}
-          onRemove={removeFile}
-          onSelect={onSelectFile}
-        />
+            {/* Attached Files Bar */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                void readFiles(e.target.files)
+                if (e.target) e.target.value = ''
+              }}
+            />
+            <UploadedFiles
+              files={files}
+              onClear={clearFiles}
+              onRemove={removeFile}
+              onSelect={onSelectFile}
+            />
 
-        {/* Editor Area */}
-        <EditorArea
-          draft={draft}
-          setDraft={setDraft}
-          onSubmit={() => void onSubmit()}
-        />
-      </EditorContainer>
+            {/* Editor Area */}
+            <EditorArea
+              draft={draft}
+              setDraft={setDraft}
+              onSubmit={() => void onSubmit()}
+            />
+          </EditorContainer>
 
-      {/* Bottom Actions */}
-      <PasteActions
-        clear={{
-          onClick: onClear,
-          enabled: canClear,
-        }}
-        submit={{
-          onClick: () => void onSubmit(),
-          enabled: canSubmit,
-          loading: isLoading,
-        }}
-      />
+          {/* Bottom Actions */}
+          <PasteActions
+            clear={{
+              onClick: onClear,
+              enabled: canClear,
+            }}
+            submit={{
+              onClick: () => void onSubmit(),
+              enabled: canSubmit,
+              loading: isLoading,
+            }}
+          />
+        </>
+      )}
     </AppLayout>
   )
 }

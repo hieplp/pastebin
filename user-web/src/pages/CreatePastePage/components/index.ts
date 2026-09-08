@@ -1,4 +1,5 @@
 export * from './PasteActions.tsx'
+export * from './CreatedPasteCard.tsx'
 export * from './EditorContainer.tsx'
 export * from './EditorArea.tsx'
 export * from './EditorToolbar.tsx'
