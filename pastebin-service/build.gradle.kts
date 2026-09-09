@@ -25,6 +25,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("com.nimbusds:nimbus-jose-jwt:10.4.2")
+
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-scalar:3.1.0")
     implementation(platform("software.amazon.awssdk:bom:2.54.13"))

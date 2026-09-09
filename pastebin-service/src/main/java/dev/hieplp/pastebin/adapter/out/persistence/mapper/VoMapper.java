@@ -88,4 +88,20 @@ public interface VoMapper {
         return value == null ? null : value.value();
     }
 
+    default RootId stringToRootId(String value) {
+        return value == null ? null : RootId.of(value);
+    }
+
+    default String rootIdToString(RootId value) {
+        return value == null ? null : value.value();
+    }
+
+    default Username stringToUsername(String value) {
+        return value == null ? null : Username.of(value);
+    }
+
+    default String usernameToString(Username value) {
+        return value == null ? null : value.value();
+    }
+
 }
