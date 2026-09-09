@@ -10,6 +10,7 @@ import dev.hieplp.pastebin.application.port.out.paste.SavePastePort;
 import dev.hieplp.pastebin.domain.enums.PasteStatus;
 import dev.hieplp.pastebin.domain.model.Paste;
 import dev.hieplp.pastebin.domain.vo.Alias;
+import dev.hieplp.pastebin.domain.util.Strings;
 import dev.hieplp.pastebin.domain.vo.PasteId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,12 +42,8 @@ public class PasteAdapter implements SavePastePort, GetPastePort, DeletePastePor
 
     @Override
     public Optional<Paste> findByIdOrAlias(String idOrAlias) {
-        if (idOrAlias == null || idOrAlias.isBlank()) {
-            return Optional.empty();
-        }
-        var trimmed = idOrAlias.trim();
-        return pasteRepo.findByPasteIdOrAlias(trimmed, trimmed)
-                .map(pasteMapper::toModel);
+        return Strings.trim(idOrAlias)
+                .flatMap(id -> pasteRepo.findByPasteIdOrAlias(id, id).map(pasteMapper::toModel));
     }
 
     @Override
@@ -60,10 +57,7 @@ public class PasteAdapter implements SavePastePort, GetPastePort, DeletePastePor
 
     @Override
     public boolean existsByAlias(Alias alias) {
-        if (alias == null || alias.value().isBlank()) {
-            return false;
-        }
-        return pasteRepo.existsByAlias(alias.value());
+        return alias != null && Strings.trim(alias.value()).filter(pasteRepo::existsByAlias).isPresent();
     }
 
     @Transactional

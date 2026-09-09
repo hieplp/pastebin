@@ -6,6 +6,7 @@ import dev.hieplp.pastebin.adapter.in.web.payload.file.FileResponse;
 import dev.hieplp.pastebin.application.dto.file.query.GetFileByIdQuery;
 import dev.hieplp.pastebin.application.port.in.file.DownloadFileUseCase;
 import dev.hieplp.pastebin.application.port.in.file.GetFileByIdUseCase;
+import dev.hieplp.pastebin.domain.util.Strings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,9 +41,9 @@ public class PasteFileController {
         var result = downloadFileUseCase.download(new GetFileByIdQuery(fileId));
         var mediaType = MediaType.APPLICATION_OCTET_STREAM;
         try {
-            if (result.contentType() != null && !result.contentType().isBlank()) {
-                mediaType = MediaType.parseMediaType(result.contentType());
-            }
+            mediaType = Strings.trim(result.contentType())
+                    .map(MediaType::parseMediaType)
+                    .orElse(MediaType.APPLICATION_OCTET_STREAM);
         } catch (InvalidMediaTypeException ignored) {
             // ponytail: unknown type → octet-stream
         }

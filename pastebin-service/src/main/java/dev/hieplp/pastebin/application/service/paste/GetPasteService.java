@@ -5,6 +5,7 @@ import dev.hieplp.pastebin.application.dto.paste.query.GetPasteQuery;
 import dev.hieplp.pastebin.application.dto.paste.result.PasteResult;
 import dev.hieplp.pastebin.application.port.in.paste.GetPasteUseCase;
 import dev.hieplp.pastebin.application.port.out.file.GetFilePort;
+import dev.hieplp.pastebin.application.port.out.paste.CachePastePort;
 import dev.hieplp.pastebin.application.port.out.paste.GetPastePort;
 import dev.hieplp.pastebin.application.port.out.paste.SavePastePort;
 import dev.hieplp.pastebin.domain.exception.NotFoundException;
@@ -22,14 +23,22 @@ public class GetPasteService implements GetPasteUseCase {
 
     private final GetPastePort getPastePort;
     private final SavePastePort savePastePort;
+    private final CachePastePort cachePastePort;
 
     private final GetFilePort getFilePort;
 
     @Override
     public PasteResult get(GetPasteQuery query) {
-        log.info("Get paste with idOrAlias={}", query.idOrAlias());
+        var idOrAlias = query.idOrAlias();
+        log.info("Get paste with idOrAlias={}", idOrAlias);
 
-        var paste = getPastePort.getByIdOrAlias(query.idOrAlias());
+        return cachePastePort.get(idOrAlias)
+                .filter(PasteResult::isAvailable)
+                .orElseGet(() -> loadPaste(idOrAlias));
+    }
+
+    private PasteResult loadPaste(String idOrAlias) {
+        var paste = getPastePort.getByIdOrAlias(idOrAlias);
 
         if (!paste.isActive()) {
             throw new NotFoundException("Paste not found");
@@ -43,7 +52,12 @@ public class GetPasteService implements GetPasteUseCase {
             burnAfterRead(paste);
         }
 
-        return PasteResult.from(paste, getFiles(paste));
+        var result = PasteResult.from(paste, getFiles(paste));
+        if (!paste.isBurnAfterRead()) {
+            cachePastePort.put(result);
+        }
+
+        return result;
     }
 
     private void deactivateExpired(Paste paste) {

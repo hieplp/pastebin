@@ -1,4 +1,5 @@
 package dev.hieplp.pastebin.adapter.out.s3.config;
+import dev.hieplp.pastebin.domain.util.Strings;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,9 +25,7 @@ public class S3StorageConfig {
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(props.accessKey(), props.secretKey())
                 ));
-        if (props.endpoint() != null && !props.endpoint().isBlank()) {
-            builder.endpointOverride(URI.create(props.endpoint()));
-        }
+        Strings.trim(props.endpoint()).ifPresent(endpoint -> builder.endpointOverride(URI.create(endpoint)));
         if (props.pathStyle() == null || props.pathStyle()) {
             builder.serviceConfiguration(S3Configuration.builder()
                     .pathStyleAccessEnabled(true)

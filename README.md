@@ -6,6 +6,7 @@ Create a paste, get a share link, view it. Optional expiry, burn-after-read, and
 user-web  (:5173)  -- /api proxy -->  pastebin-service  (:9000)
                                            |
                                     PostgreSQL  (:5432)
+                                    Redis       (:6379)
                                     local disk  or  MinIO/S3
 ```
 
@@ -13,7 +14,7 @@ user-web  (:5173)  -- /api proxy -->  pastebin-service  (:9000)
 |---|---|
 | **pastebin-service** | Java 25, Spring Boot 4, JPA, Flyway, Spring Security, hexagonal (ports & adapters) |
 | **user-web** | React 19, Vite, TypeScript, Tailwind 4, Zustand, Ky |
-| **infra** | PostgreSQL 17, optional MinIO |
+| **infra** | PostgreSQL 17, Redis 7, optional MinIO |
 
 ---
 
@@ -50,7 +51,7 @@ Line numbers, raw/copy/download, syntax + privacy badges.
 ```
 pastebin/
 ├── docker/
-│   └── docker-compose.yml          # postgres + minio
+│   └── docker-compose.yml          # postgres + redis + minio
 ├── docs/screenshots/
 ├── pastebin-service/               # API
 └── user-web/                       # SPA
@@ -116,7 +117,7 @@ user-web/
 
 ## Run
 
-Postgres on `:5432`. MinIO only if you switch storage to S3.
+Postgres on `:5432`, Redis on `:6379`. MinIO only if you switch storage to S3.
 
 ```bash
 # database (+ minio)

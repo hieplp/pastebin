@@ -8,6 +8,7 @@ import dev.hieplp.pastebin.application.port.out.storage.UploadStoragePort;
 import dev.hieplp.pastebin.domain.exception.BadRequestException;
 import dev.hieplp.pastebin.domain.model.PasteFile;
 import dev.hieplp.pastebin.domain.vo.StorageKey;
+import dev.hieplp.pastebin.domain.util.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -64,7 +65,7 @@ public class S3StorageAdapter implements UploadStoragePort, ReadStoragePort, Del
 
     @Override
     public void delete(StorageKey storageKey) {
-        if (storageKey == null || storageKey.value().isBlank()) {
+        if (storageKey == null || Strings.trim(storageKey.value()).isEmpty()) {
             return;
         }
         try {

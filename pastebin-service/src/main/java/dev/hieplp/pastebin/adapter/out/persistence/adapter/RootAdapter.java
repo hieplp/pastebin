@@ -7,6 +7,7 @@ import dev.hieplp.pastebin.application.port.out.root.GetRootPort;
 import dev.hieplp.pastebin.application.port.out.root.SaveRootPort;
 import dev.hieplp.pastebin.domain.model.Root;
 import dev.hieplp.pastebin.domain.vo.Username;
+import dev.hieplp.pastebin.domain.util.Strings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -35,10 +36,11 @@ public class RootAdapter implements SaveRootPort, ExistRootPort, GetRootPort {
 
     @Override
     public Optional<Root> findByUsername(Username username) {
-        if (username == null || username.value() == null || username.value().isBlank()) {
+        if (username == null) {
             return Optional.empty();
         }
-        return rootRepo.findByUsername(username.value()).map(rootMapper::toModel);
+        return Strings.trim(username.value())
+                .flatMap(name -> rootRepo.findByUsername(name).map(rootMapper::toModel));
     }
 
 

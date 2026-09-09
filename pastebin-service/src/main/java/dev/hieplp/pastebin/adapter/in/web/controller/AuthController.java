@@ -4,6 +4,7 @@ import dev.hieplp.pastebin.adapter.in.web.payload.common.BaseResponse;
 import dev.hieplp.pastebin.adapter.in.web.security.AuthCookieWriter;
 import dev.hieplp.pastebin.application.port.in.auth.RefreshTokenUseCase;
 import dev.hieplp.pastebin.domain.exception.UnauthorizedException;
+import dev.hieplp.pastebin.domain.util.Strings;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +23,8 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public BaseResponse<Void> refresh(HttpServletRequest request, HttpServletResponse response) {
-        var refreshToken = authCookieWriter.readRefresh(request);
-        if (refreshToken == null || refreshToken.isBlank()) {
-            throw new UnauthorizedException("Invalid refresh token");
-        }
+        var refreshToken = Strings.trim(authCookieWriter.readRefresh(request))
+                .orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
 
         authCookieWriter.write(response, refreshTokenUseCase.refresh(refreshToken));
         return BaseResponse.ok(null);

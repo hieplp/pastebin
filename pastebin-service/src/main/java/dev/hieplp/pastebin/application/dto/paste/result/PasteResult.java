@@ -1,6 +1,7 @@
 package dev.hieplp.pastebin.application.dto.paste.result;
 
 import dev.hieplp.pastebin.application.dto.file.result.FileResult;
+import dev.hieplp.pastebin.domain.enums.PasteStatus;
 import dev.hieplp.pastebin.domain.enums.Privacy;
 import dev.hieplp.pastebin.domain.enums.Syntax;
 import dev.hieplp.pastebin.domain.model.Paste;
@@ -17,6 +18,8 @@ public record PasteResult(
         Syntax syntax,
         Instant createdAt,
         Instant expiredAt,
+        PasteStatus status,
+        boolean burnAfterRead,
         List<FileResult> files
 ) {
 
@@ -30,8 +33,26 @@ public record PasteResult(
                 paste.getSyntax(),
                 paste.getCreatedAt(),
                 paste.getExpiredAt(),
+                paste.getStatus(),
+                paste.isBurnAfterRead(),
                 files
         );
+    }
+
+    public boolean isActive() {
+        return status == PasteStatus.ACTIVE;
+    }
+
+    public boolean isExpired() {
+        return expiredAt != null && expiredAt.isBefore(Instant.now());
+    }
+
+    public boolean isAvailable() {
+        return isActive() && !isExpired();
+    }
+
+    public boolean isBurnAfterRead() {
+        return burnAfterRead;
     }
 
 }

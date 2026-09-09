@@ -5,6 +5,7 @@ import dev.hieplp.pastebin.application.dto.paste.command.DeletePasteCommand;
 import dev.hieplp.pastebin.application.dto.paste.result.DeletePasteResult;
 import dev.hieplp.pastebin.application.port.in.file.DeleteFilesUseCase;
 import dev.hieplp.pastebin.application.port.out.paste.DeletePastePort;
+import dev.hieplp.pastebin.application.port.out.paste.CachePastePort;
 import dev.hieplp.pastebin.domain.vo.PasteId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,9 @@ class DeletePasteServiceTest {
     @Mock
     private DeletePastePort deletePastePort;
 
+    @Mock
+    private CachePastePort cachePastePort;
+
     @InjectMocks
     private DeletePasteService deletePasteService;
 
@@ -37,7 +41,7 @@ class DeletePasteServiceTest {
 
         assertNull(r1.pasteId());
         assertNull(r2.pasteId());
-        verifyNoInteractions(deleteFilesUseCase, deletePastePort);
+        verifyNoInteractions(deleteFilesUseCase, deletePastePort, cachePastePort);
     }
 
     @Test
@@ -51,6 +55,7 @@ class DeletePasteServiceTest {
         assertEquals("p-1", result.pasteId());
         verify(deleteFilesUseCase).delete(pasteId);
         verify(deletePastePort).deleteById(pasteId);
+        verify(cachePastePort).evict("p-1");
     }
 
     @Test
@@ -64,6 +69,7 @@ class DeletePasteServiceTest {
         assertEquals("p-2", result.pasteId());
         verify(deleteFilesUseCase).delete(pasteId);
         verify(deletePastePort).deleteById(pasteId);
+        verify(cachePastePort).evict("p-2");
     }
 
     @Test
@@ -76,6 +82,7 @@ class DeletePasteServiceTest {
         assertEquals("p-3", result.pasteId());
         verify(deleteFilesUseCase).delete(pasteId);
         verify(deletePastePort).deleteById(pasteId);
+        verify(cachePastePort).evict("p-3");
     }
 
 }

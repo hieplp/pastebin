@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Dev launcher: pastebin PostgreSQL (docker) + Spring Boot app.
+# Dev launcher: pastebin PostgreSQL + Redis (docker) + Spring Boot app.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -29,6 +29,22 @@ docker exec pastebin-postgres pg_isready -U pastebin -d pastebin >/dev/null
 
 port=$(docker port pastebin-postgres 5432/tcp | head -1 | sed 's/.*://')
 [ "$port" != 5432 ] && export SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:$port/pastebin"
+
+# --- Redis ----------------------------------------------------------------
+if ! docker ps -a --format '{{.Names}}' | grep -qx pastebin-redis; then
+  rport=6379
+  if (exec 3<>/dev/tcp/127.0.0.1/6379) 2>/dev/null; then
+    rport=6380
+  fi
+  echo "Starting redis on host port $rport"
+  docker run -d --name pastebin-redis --restart unless-stopped \
+    -p "$rport:6379" \
+    redis:7-alpine >/dev/null
+elif [ "$(docker inspect -f '{{.State.Running}}' pastebin-redis)" != "true" ]; then
+  docker start pastebin-redis >/dev/null
+fi
+rport=$(docker port pastebin-redis 6379/tcp | head -1 | sed 's/.*://')
+[ "$rport" != 6379 ] && export SPRING_DATA_REDIS_PORT="$rport"
 
 # --- App ------------------------------------------------------------------
 if (exec 3<>/dev/tcp/127.0.0.1/8080) 2>/dev/null; then

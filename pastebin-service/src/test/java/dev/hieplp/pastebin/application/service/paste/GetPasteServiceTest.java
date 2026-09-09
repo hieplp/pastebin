@@ -3,6 +3,8 @@ package dev.hieplp.pastebin.application.service.paste;
 import dev.hieplp.pastebin.application.dto.paste.query.GetPasteQuery;
 import dev.hieplp.pastebin.application.port.out.file.GetFilePort;
 import dev.hieplp.pastebin.application.port.out.paste.GetPastePort;
+import dev.hieplp.pastebin.application.dto.paste.result.PasteResult;
+import dev.hieplp.pastebin.application.port.out.paste.CachePastePort;
 import dev.hieplp.pastebin.application.port.out.paste.SavePastePort;
 import dev.hieplp.pastebin.domain.enums.PasteStatus;
 import dev.hieplp.pastebin.domain.enums.Privacy;
@@ -27,9 +29,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +50,9 @@ class GetPasteServiceTest {
     @Mock
     private GetFilePort getFilePort;
 
+    @Mock
+    private CachePastePort cachePastePort;
+
     @InjectMocks
     private GetPasteService getPasteService;
 
@@ -51,6 +60,7 @@ class GetPasteServiceTest {
 
     @BeforeEach
     void setUp() {
+        when(cachePastePort.get(any())).thenReturn(Optional.empty());
         paste = Paste.create(
                 Title.of("Test Title"),
                 Alias.of("test-alias"),
@@ -83,6 +93,7 @@ class GetPasteServiceTest {
         assertEquals(1, result.files().size());
         assertEquals("file-123", result.files().getFirst().fileId());
         assertNull(result.files().getFirst().content());
+        verify(cachePastePort).put(result);
     }
 
     @Test
@@ -111,6 +122,7 @@ class GetPasteServiceTest {
         assertNotNull(result);
         assertEquals(PasteStatus.INACTIVE, paste.getStatus());
         verify(savePastePort).save(paste);
+        verify(cachePastePort, never()).put(any());
     }
 
     @Test
@@ -143,4 +155,84 @@ class GetPasteServiceTest {
         assertEquals(1, result.files().size());
         assertNull(result.files().getFirst().content());
     }
+
+    @Test
+    void get_cachedPaste_returnsWithoutDb() {
+        var query = new GetPasteQuery("test-alias");
+        var cached = new PasteResult(
+                "p-1",
+                "Test Title",
+                "test-alias",
+                "Hello World",
+                Privacy.PUBLIC,
+                Syntax.PLAINTEXT,
+                Instant.now(),
+                null,
+                PasteStatus.ACTIVE,
+                false,
+                List.of()
+        );
+        when(cachePastePort.get("test-alias")).thenReturn(Optional.of(cached));
+
+        var result = getPasteService.get(query);
+
+        assertEquals(cached, result);
+        verifyNoInteractions(getPastePort, savePastePort, getFilePort);
+    }
+
+    @Test
+    void get_cachedExpiredPaste_loadsFromDb() {
+        var query = new GetPasteQuery("test-alias");
+        var cached = new PasteResult(
+                "p-1",
+                "Test Title",
+                "test-alias",
+                "Hello World",
+                Privacy.PUBLIC,
+                Syntax.PLAINTEXT,
+                Instant.now(),
+                Instant.now().minus(1, ChronoUnit.HOURS),
+                PasteStatus.ACTIVE,
+                false,
+                List.of()
+        );
+        paste.setExpiredAt(cached.expiredAt());
+        when(cachePastePort.get("test-alias")).thenReturn(Optional.of(cached));
+        when(getPastePort.getByIdOrAlias("test-alias")).thenReturn(paste);
+
+        var ex = assertThrows(NotFoundException.class, () -> getPasteService.get(query));
+        assertEquals("Paste has expired", ex.getMessage());
+        verify(savePastePort).save(paste);
+    }
+
+    @Test
+    void get_cachedBurnAfterReadPaste_burnsViaDb() {
+        var query = new GetPasteQuery("test-alias");
+        var cached = new PasteResult(
+                "p-1",
+                "Test Title",
+                "test-alias",
+                "Hello World",
+                Privacy.PUBLIC,
+                Syntax.PLAINTEXT,
+                Instant.now(),
+                null,
+                PasteStatus.ACTIVE,
+                true,
+                List.of()
+        );
+        paste.setBurnAfterRead(true);
+        when(cachePastePort.get("test-alias")).thenReturn(Optional.of(cached));
+        when(getPastePort.getByIdOrAlias("test-alias")).thenReturn(paste);
+        when(getFilePort.findByPasteId(paste.getPasteId())).thenReturn(List.of());
+
+        var result = getPasteService.get(query);
+
+        assertNotNull(result);
+        assertEquals(PasteStatus.INACTIVE, paste.getStatus());
+        verify(savePastePort).save(paste);
+        verify(cachePastePort, never()).put(any());
+    }
+
+
 }

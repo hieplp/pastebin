@@ -16,6 +16,7 @@ import dev.hieplp.pastebin.application.port.out.token.ParseTokenPort;
 import dev.hieplp.pastebin.domain.enums.Role;
 import dev.hieplp.pastebin.domain.enums.TokenType;
 import dev.hieplp.pastebin.domain.exception.JwtException;
+import dev.hieplp.pastebin.domain.util.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -77,12 +78,13 @@ public class JwtAdapter implements IssueTokenPort, ParseTokenPort {
 
     @Override
     public Optional<TokenClaims> parse(String token) {
-        if (token == null || token.isBlank()) {
+        var jwtToken = Strings.trim(token).orElse(null);
+        if (jwtToken == null) {
             return Optional.empty();
         }
 
         try {
-            var jwt = SignedJWT.parse(token);
+            var jwt = SignedJWT.parse(jwtToken);
             if (!jwt.verify(verifier)) {
                 return Optional.empty();
             }
