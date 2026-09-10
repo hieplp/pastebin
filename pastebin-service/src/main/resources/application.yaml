@@ -35,7 +35,7 @@ spring:
     uri: ${MONGODB_URI:mongodb://localhost:27017/pastebin}
 pastebin:
   persistence:
-    type: ${PASTEBIN_PERSISTENCE_TYPE:mongo}
+    type: ${PASTEBIN_PERSISTENCE_TYPE:jpa}
   storage:
     type: ${PASTEBIN_STORAGE_TYPE:local}
     local:
