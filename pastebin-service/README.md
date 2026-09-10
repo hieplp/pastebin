@@ -2,20 +2,21 @@
 
 API for creating and fetching pastes (text + optional attachments).
 
-Java 25 · Spring Boot 4 · PostgreSQL / Flyway · hexagonal. Listens on **`:9000`**. Docs at `/swagger-ui` and `/scalar`.
+Java 25 · Spring Boot 4 · JPA or Mongo · hexagonal. Listens on **`:9000`**. Docs at `/swagger-ui` and `/scalar`.
 
 ---
 
 ## How the code is split
 
-Three rings. Outer rings know about Spring, HTTP, JPA, S3. The middle ring is use cases. The inner ring is plain Java.
+Three rings. Outer rings know about Spring, HTTP, JPA/Mongo, S3. The middle ring is use cases. The inner ring is plain Java.
 
 ```
 adapter/in     HTTP, cron          how the world calls us
 application    ports + services    what the app does
 domain         models, VOs         rules, no framework
-adapter/out    JPA, disk, S3       how we persist
+adapter/out    JPA or Mongo, disk, S3
 ```
+
 
 A request never jumps rings. Controller → use case → domain / outbound port → adapter.
 
@@ -33,7 +34,8 @@ pastebin-service/
 │   │   │   ├── web/                 controller, payload, mapper, security, errors
 │   │   │   └── schedule/            expired pastes + orphan files
 │   │   └── out/
-│   │       ├── persistence/         entity, repository, mapper, adapter
+│   │       ├── jpa/                 entity, repository, mapper, adapter (default)
+│   │       ├── mongo/               document, repository, mapper, adapter
 │   │       ├── localstorage/        disk (default)
 │   │       └── s3/                  MinIO / S3
 │   ├── application/
@@ -74,7 +76,7 @@ If you know the verb and the aggregate, you can guess the file.
 
 Split by **aggregate**, not by layer dump: `…/paste/` vs `…/file/` vs `…/storage/` repeats in ports, services, and DTOs.
 
-Mappers sit next to the adapter that needs them (`adapter/in/web/mapper`, `adapter/out/persistence/mapper`). Payloads stay in `payload/{aggregate}/`. Config/properties sit in the adapter they configure.
+Mappers sit next to the adapter that needs them (`adapter/in/web/mapper`, `adapter/out/jpa/mapper`). Payloads stay in `payload/{aggregate}/`. Config/properties sit in the adapter they configure.
 
 `CommandEnvelope` wraps a command plus `Actor` (anonymous today). Mutations go through it; reads use a `*Query`.
 
@@ -91,6 +93,8 @@ Want “list my pastes”? You should not invent a new top-level folder.
 
 Want a new blob backend? Implement the four storage ports (`Upload`, `Read`, `Delete`, `List`) behind `@ConditionalOnProperty(pastebin.storage.type=…)`. Don’t touch use cases.
 
+Want a new DB? Same idea: implement paste/file/root ports behind `@ConditionalOnProperty(pastebin.persistence.type=…)`.
+
 Delete-paste already exists as a use case (cleanup uses it). There is no HTTP delete yet — that would be a controller method, not a new service.
 
 ---
@@ -105,6 +109,8 @@ Delete-paste already exists as a use case (cleanup uses it). There is no HTTP de
 
 **Cleanup** — hourly: delete expired/`INACTIVE` pastes (files then row). Weekly: delete storage objects whose key is not in `paste_files`.
 
+**Persistence** — `jpa` (default, Postgres) or `mongo`. Same ports, one adapter active.
+
 **Storage** — `local` (default, `uploads/`) or `s3` (MinIO at `:9002`). Same ports, one adapter active.
 
 ---
@@ -112,6 +118,7 @@ Delete-paste already exists as a use case (cleanup uses it). There is no HTTP de
 ## Run
 
 ```bash
-./run.sh          # postgres container if missing, then bootRun on :9000
+./run.sh                                    # postgres + bootRun on :9000
+PASTEBIN_PERSISTENCE_TYPE=mongo ./run.sh    # mongo instead
 ./gradlew test
 ```

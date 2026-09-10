@@ -1,6 +1,15 @@
 server:
   port: 9000
 spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+      - org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration
+      - org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration
+      - org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
+      - org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration
+      - org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration
+      - org.springframework.boot.data.mongodb.autoconfigure.DataMongoRepositoriesAutoConfiguration
   application:
     name: pastebin-service
   datasource:
@@ -22,7 +31,11 @@ spring:
       port: ${REDIS_PORT:6379}
       timeout: 200ms
       connect-timeout: 200ms
+  mongodb:
+    uri: ${MONGODB_URI:mongodb://localhost:27017/pastebin}
 pastebin:
+  persistence:
+    type: ${PASTEBIN_PERSISTENCE_TYPE:jpa}
   storage:
     type: ${PASTEBIN_STORAGE_TYPE:local}
     local:
