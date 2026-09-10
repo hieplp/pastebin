@@ -5,16 +5,16 @@ Create a paste, get a share link, view it. Optional expiry, burn-after-read, and
 ```
 user-web  (:5173)  -- /api proxy -->  pastebin-service  (:9000)
                                            |
-                                    PostgreSQL  (:5432)
+                                    PostgreSQL  (:5432)  or  MongoDB (:27017)
                                     Redis       (:6379)
                                     local disk  or  MinIO/S3
 ```
 
 | Piece | Stack |
 |---|---|
-| **pastebin-service** | Java 25, Spring Boot 4, JPA, Flyway, Spring Security, hexagonal (ports & adapters) |
+| **pastebin-service** | Java 25, Spring Boot 4, JPA or Mongo, Flyway (JPA), Spring Security, hexagonal |
 | **user-web** | React 19, Vite, TypeScript, Tailwind 4, Zustand, Ky |
-| **infra** | PostgreSQL 17, Redis 7, optional MinIO |
+| **infra** | PostgreSQL 17, MongoDB 7, Redis 7, optional MinIO |
 
 ---
 
@@ -75,7 +75,8 @@ pastebin-service/
 │   │   │   │   └── payload/
 │   │   │   └── schedule/           # expired pastes + orphan files
 │   │   └── out/
-│   │       ├── persistence/        # JPA entities, repos, mappers
+│   │       ├── jpa/                # JPA (default): entities, repos, mappers
+│   │       ├── mongo/              # Mongo: documents, repos, mappers
 │   │       ├── localstorage/       # disk under uploads/
 │   │       └── s3/                 # S3 / MinIO
 │   ├── application/
@@ -117,7 +118,7 @@ user-web/
 
 ## Run
 
-Postgres on `:5432`, Redis on `:6379`. MinIO only if you switch storage to S3.
+Postgres on `:5432` (default), Mongo on `:27017` if you switch persistence, Redis on `:6379`. MinIO only if you switch storage to S3.
 
 ```bash
 # database (+ minio)
@@ -131,7 +132,19 @@ cd pastebin-service && ./run.sh
 cd user-web && bun install && bun run dev
 ```
 
-`run.sh` starts a `pastebin-postgres` container if one is missing, and moves the app to `:8081` if `:8080` is taken. The app itself listens on **9000** (`application.yaml`).
+`run.sh` starts postgres (or mongo if `PASTEBIN_PERSISTENCE_TYPE=mongo`) if missing. The app listens on **9000**.
+
+### Persistence
+
+| `PASTEBIN_PERSISTENCE_TYPE` | Where metadata lives |
+|---|---|
+| `jpa` (default) | PostgreSQL |
+| `mongo` | MongoDB at `mongodb://localhost:27017/pastebin` |
+
+```bash
+export PASTEBIN_PERSISTENCE_TYPE=mongo
+cd pastebin-service && ./run.sh
+```
 
 ### Storage
 
@@ -144,6 +157,7 @@ cd user-web && bun install && bun run dev
 export PASTEBIN_STORAGE_TYPE=s3
 cd pastebin-service && ./run.sh
 ```
+
 
 ---
 

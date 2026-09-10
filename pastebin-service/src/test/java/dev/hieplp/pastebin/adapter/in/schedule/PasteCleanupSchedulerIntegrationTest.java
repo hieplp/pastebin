@@ -1,7 +1,7 @@
 package dev.hieplp.pastebin.adapter.in.schedule;
 
-import dev.hieplp.pastebin.adapter.out.persistence.entity.PasteEntity;
-import dev.hieplp.pastebin.adapter.out.persistence.repository.PasteRepository;
+import dev.hieplp.pastebin.adapter.out.jpa.entity.PasteEntity;
+import dev.hieplp.pastebin.adapter.out.jpa.repository.PasteRepository;
 import dev.hieplp.pastebin.domain.enums.PasteStatus;
 import dev.hieplp.pastebin.domain.enums.Privacy;
 import dev.hieplp.pastebin.domain.enums.Syntax;
